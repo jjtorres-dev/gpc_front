@@ -3,14 +3,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../../core/services/auth.service';
-import { Rol } from '../../../../core/models/usuario.model';
+import { MenuService } from '../../../../core/services/menu.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/material';
-
-const DASHBOARD_BY_ROL: Record<Rol, string> = {
-  Administrador: '/dashboard',
-  Digitador: '/dashboard',
-  Gerencial: '/dashboard',
-};
 
 @Component({
   selector: 'app-login',
@@ -22,6 +16,7 @@ const DASHBOARD_BY_ROL: Record<Rol, string> = {
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly menuService = inject(MenuService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -49,7 +44,8 @@ export class LoginComponent {
       next: (user) => {
         this.loading.set(false);
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-        this.router.navigateByUrl(returnUrl ?? DASHBOARD_BY_ROL[user.rol]);
+        const homeRoute = this.menuService.getMenuForRole(user.rol)[0]?.route ?? '/acceso-denegado';
+        this.router.navigateByUrl(returnUrl ?? homeRoute);
       },
       error: (error: Error) => {
         this.loading.set(false);

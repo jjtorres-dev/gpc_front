@@ -1,0 +1,62 @@
+:host {
+  display: block;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.toolbar {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.user-name {
+  margin-inline-end: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.menu-button {
+  display: none;
+  margin-inline-end: 0.5rem;
+}
+
+.sidenav-container {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.sidenav {
+  width: 280px;
+}
+
+.content {
+  min-height: 100%;
+  background: #f5f5f5;
+}
+
+@media (max-width: 767px) {
+  .menu-button {
+    display: inline-flex;
+  }
+
+  .system-name {
+    font-size: 1rem;
+  }
+
+  .user-name {
+    max-width: 35vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

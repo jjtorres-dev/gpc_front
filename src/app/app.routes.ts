@@ -1,7 +1,17 @@
 import { Routes } from '@angular/router';
 
+import { authGuard } from './core/guards/auth.guard';
+import { homeRedirectGuard } from './core/guards/home-redirect.guard';
+import { roleGuard } from './core/guards/role.guard';
+
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  {
+    path: '',
+    pathMatch: 'full',
+    canActivate: [authGuard, homeRedirectGuard],
+    loadComponent: () =>
+      import('./shared/components/layout/layout.component').then((m) => m.LayoutComponent),
+  },
   {
     path: 'login',
     loadComponent: () => import('./features/auth/pages/login/login.component').then((m) => m.LoginComponent),
@@ -26,13 +36,63 @@ export const routes: Routes = [
       ),
   },
 
-  // Ejemplo de cómo se protegerá una ruta de dominio futura (aún no implementada):
-  // {
-  //   path: 'admin',
-  //   canActivate: [authGuard, roleGuard],
-  //   data: { roles: ['Administrador'] },
-  //   loadChildren: () => import('./features/usuarios/usuarios.routes').then((m) => m.USUARIOS_ROUTES),
-  // },
+  {
+    path: '',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./shared/components/layout/layout.component').then((m) => m.LayoutComponent),
+    children: [
+      {
+        path: 'usuarios',
+        canActivate: [roleGuard],
+        data: { roles: ['Administrador'], title: 'Gestión de Usuarios' },
+        loadComponent: () =>
+          import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
+      },
+      {
+        path: 'reportes',
+        canActivate: [roleGuard],
+        data: { roles: ['Administrador', 'Digitador', 'Gerencial'], title: 'Reportes' },
+        loadComponent: () =>
+          import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
+      },
+      {
+        path: 'actividades',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador'], title: 'Actividades' },
+        loadComponent: () =>
+          import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
+      },
+      {
+        path: 'participantes',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador'], title: 'Participantes' },
+        loadComponent: () =>
+          import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
+      },
+      {
+        path: 'ponentes-firmantes',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador'], title: 'Ponentes y Firmantes' },
+        loadComponent: () =>
+          import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
+      },
+      {
+        path: 'emision',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador'], title: 'Emisión de Certificados' },
+        loadComponent: () =>
+          import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
+      },
+      {
+        path: 'dashboard',
+        canActivate: [roleGuard],
+        data: { roles: ['Gerencial'], title: 'Dashboard' },
+        loadComponent: () =>
+          import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
+      },
+    ],
+  },
 
   { path: '**', redirectTo: 'login' },
 ];

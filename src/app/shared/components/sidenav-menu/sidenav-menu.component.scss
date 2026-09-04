@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+.active-link {
+  background: var(--mat-option-selected-state-layer-color, rgba(0, 0, 0, 0.08));
+}

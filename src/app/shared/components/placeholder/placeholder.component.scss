@@ -1,0 +1,31 @@
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+.placeholder {
+  display: grid;
+  min-height: 100%;
+  box-sizing: border-box;
+  place-items: center;
+  padding: 2rem;
+}
+
+.placeholder-card {
+  width: min(100%, 480px);
+  text-align: center;
+}
+
+.construction-icon {
+  width: 64px;
+  height: 64px;
+  font-size: 64px;
+}
+
+h1 {
+  margin-block: 1rem 0.5rem;
+}
+
+p {
+  margin: 0;
+}

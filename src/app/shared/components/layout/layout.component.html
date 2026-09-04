@@ -1,0 +1,35 @@
+<div class="layout">
+  <mat-toolbar color="primary" class="toolbar">
+    <button
+      mat-icon-button
+      class="menu-button"
+      type="button"
+      aria-label="Abrir menú principal"
+      (click)="sidenav.toggle()"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <span class="system-name">Sistema GPC</span>
+    <span class="toolbar-spacer"></span>
+    <span class="user-name">{{ currentUser()?.nombre }}</span>
+    <button mat-icon-button type="button" aria-label="Cerrar sesión" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav
+      #sidenav
+      class="sidenav"
+      [mode]="isNarrowScreen() ? 'over' : 'side'"
+      [opened]="!isNarrowScreen()"
+    >
+      <app-sidenav-menu [items]="menuItems()" />
+    </mat-sidenav>
+
+    <mat-sidenav-content class="content">
+      <router-outlet />
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>
