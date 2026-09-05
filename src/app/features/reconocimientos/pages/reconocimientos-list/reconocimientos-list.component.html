@@ -1,0 +1,68 @@
+<section class="page">
+  <div class="page-header">
+    <div>
+      <h1>Reconocimientos</h1>
+      <p>Registro de reconocimientos otorgados a personas destacadas.</p>
+    </div>
+    <a mat-flat-button color="primary" routerLink="/reconocimientos/nuevo">
+      <mat-icon>add</mat-icon>
+      Registrar reconocimiento
+    </a>
+  </div>
+
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Buscar</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput [formControl]="searchControl" placeholder="Nombre, DNI o título" autocomplete="off" />
+  </mat-form-field>
+
+  @if (vm.error(); as error) {
+    <div class="error-banner" role="alert">{{ error }}</div>
+  }
+
+  @if (vm.loading()) {
+    <div class="loading" aria-label="Cargando reconocimientos">
+      <mat-spinner diameter="42" />
+    </div>
+  } @else if (vm.reconocimientos().length === 0) {
+    <p class="empty">No se encontraron reconocimientos.</p>
+  } @else {
+    <div class="cards-grid">
+      @for (reconocimiento of vm.reconocimientos(); track reconocimiento.id) {
+        <mat-card class="reconocimiento-card">
+          <mat-card-header>
+            <mat-card-title>{{ reconocimiento.persona.nombreCompleto }}</mat-card-title>
+            <mat-card-subtitle>DNI {{ reconocimiento.persona.dni }}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <h2 class="titulo">{{ reconocimiento.titulo }}</h2>
+            <p class="motivo">{{ reconocimiento.motivo || 'Sin motivo registrado' }}</p>
+            <p class="fecha">
+              <mat-icon>event</mat-icon>
+              {{ reconocimiento.fechaReconocimiento | date: 'dd/MM/yyyy' : 'UTC' }}
+            </p>
+            <mat-chip-set aria-label="Estado del certificado">
+              <mat-chip class="cert-chip" disabled>Certificado: módulo en desarrollo</mat-chip>
+            </mat-chip-set>
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            <a mat-button color="primary" [routerLink]="['/reconocimientos', reconocimiento.id, 'editar']">
+              <mat-icon>edit</mat-icon>
+              Editar
+            </a>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+
+    <mat-paginator
+      [length]="vm.meta().total"
+      [pageIndex]="vm.meta().page - 1"
+      [pageSize]="vm.meta().perPage"
+      [hidePageSize]="true"
+      (page)="cambiarPagina($event)"
+    />
+  }
+</section>

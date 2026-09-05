@@ -1,0 +1,111 @@
+:host {
+  display: block;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block-end: 1.25rem;
+}
+
+.page-header h1 {
+  margin: 0 0 0.25rem;
+}
+
+.page-header p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.search-field {
+  width: 100%;
+  max-width: 420px;
+  margin-block-end: 1rem;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-block-end: 1rem;
+}
+
+.reconocimiento-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.reconocimiento-card mat-card-content {
+  flex: 1;
+}
+
+.titulo {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.motivo {
+  margin: 0 0 0.75rem;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.fecha {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.75rem;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.9rem;
+}
+
+.fecha mat-icon {
+  font-size: 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.cert-chip {
+  --mdc-chip-elevated-container-color: #eeeeee;
+  --mdc-chip-label-text-color: #555555;
+  --mdc-chip-disabled-label-text-color: #555555;
+  font-size: 0.78rem;
+}
+
+.error-banner {
+  margin-block-end: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: 4px;
+  color: #8a1c1c;
+  background: #fde8e8;
+}
+
+.loading {
+  display: grid;
+  min-height: 240px;
+  place-items: center;
+}
+
+.empty {
+  padding: 2rem 0;
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+  }
+}

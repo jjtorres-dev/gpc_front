@@ -100,6 +100,33 @@ export const routes: Routes = [
           import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
       },
       {
+        path: 'reconocimientos',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador', 'Administrador'], title: 'Reconocimientos' },
+        loadComponent: () =>
+          import('./features/reconocimientos/pages/reconocimientos-list/reconocimientos-list.component').then(
+            (m) => m.ReconocimientosListComponent,
+          ),
+      },
+      {
+        path: 'reconocimientos/nuevo',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador', 'Administrador'], title: 'Nuevo reconocimiento' },
+        loadComponent: () =>
+          import('./features/reconocimientos/pages/reconocimiento-form/reconocimiento-form.component').then(
+            (m) => m.ReconocimientoFormComponent,
+          ),
+      },
+      {
+        path: 'reconocimientos/:id/editar',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador', 'Administrador'], title: 'Editar reconocimiento' },
+        loadComponent: () =>
+          import('./features/reconocimientos/pages/reconocimiento-form/reconocimiento-form.component').then(
+            (m) => m.ReconocimientoFormComponent,
+          ),
+      },
+      {
         path: 'ponentes-firmantes',
         canActivate: [roleGuard],
         data: { roles: ['Digitador'], title: 'Ponentes y Firmantes' },

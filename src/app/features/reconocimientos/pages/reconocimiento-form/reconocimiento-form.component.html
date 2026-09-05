@@ -1,0 +1,184 @@
+<section class="page">
+  <div class="page-header">
+    <div>
+      <h1>{{ isEditMode ? 'Editar reconocimiento' : 'Registrar reconocimiento' }}</h1>
+      <p>
+        {{
+          isEditMode
+            ? 'Actualiza los datos del reconocimiento.'
+            : 'Registra un nuevo reconocimiento a una persona.'
+        }}
+      </p>
+    </div>
+    <a mat-button routerLink="/reconocimientos">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </a>
+  </div>
+
+  @if (vm.error(); as error) {
+    <div class="error-banner" role="alert">{{ error }}</div>
+  }
+
+  <mat-card>
+    <mat-card-content>
+      @if (isEditMode && vm.loading() && !personaFija()) {
+        <div class="loading" aria-label="Cargando reconocimiento">
+          <mat-spinner diameter="42" />
+        </div>
+      } @else {
+        <form class="reco-form" [formGroup]="form" (ngSubmit)="guardar()">
+          <!-- Bloque persona -->
+          @if (isEditMode) {
+            @if (personaFija(); as p) {
+              <div class="persona-fija full-width">
+                <span class="field-label">Persona reconocida</span>
+                <p class="persona-fija-nombre">{{ p.nombreCompleto }}</p>
+                <p class="persona-fija-meta">
+                  DNI {{ p.dni }}
+                  @if (p.correo) {
+                    <span> · {{ p.correo }}</span>
+                  }
+                </p>
+                <p class="persona-fija-hint">
+                  La persona de un reconocimiento existente no se puede reasignar.
+                </p>
+              </div>
+            }
+          } @else {
+            <mat-form-field appearance="outline" class="dni-field">
+              <mat-label>DNI</mat-label>
+              <input
+                matInput
+                formControlName="dni"
+                inputmode="numeric"
+                maxlength="8"
+                autocomplete="off"
+              />
+              @if (buscando()) {
+                <mat-spinner matSuffix diameter="18" />
+              }
+              @if (form.controls.dni.hasError('required') && form.controls.dni.touched) {
+                <mat-error>El DNI es obligatorio.</mat-error>
+              }
+              @if (form.controls.dni.hasError('pattern') && form.controls.dni.touched) {
+                <mat-error>El DNI debe tener 8 dígitos.</mat-error>
+              }
+            </mat-form-field>
+
+            @if (busquedaHecha() && persona(); as encontrada) {
+              <div class="persona-info full-width">
+                <mat-chip-set aria-label="Estado de la persona">
+                  <mat-chip class="persona-chip-existente">
+                    <mat-icon matChipAvatar>badge</mat-icon>
+                    Persona existente
+                  </mat-chip>
+                </mat-chip-set>
+                <dl class="persona-datos">
+                  <div>
+                    <dt>Nombre completo</dt>
+                    <dd>{{ encontrada.nombreCompleto }}</dd>
+                  </div>
+                  <div>
+                    <dt>Correo</dt>
+                    <dd>{{ encontrada.correo || 'No registrado' }}</dd>
+                  </div>
+                </dl>
+              </div>
+            } @else if (personaNueva) {
+              <div class="persona-nueva full-width">
+                <p class="persona-nueva-hint">
+                  <mat-icon>person_add</mat-icon>
+                  Persona nueva, completa sus datos.
+                </p>
+                <div class="row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Nombre completo</mat-label>
+                    <input matInput formControlName="nombreCompleto" autocomplete="off" />
+                    @if (
+                      form.controls.nombreCompleto.hasError('required') &&
+                      form.controls.nombreCompleto.touched
+                    ) {
+                      <mat-error>El nombre completo es obligatorio.</mat-error>
+                    }
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Correo (opcional)</mat-label>
+                    <input matInput type="email" formControlName="correo" autocomplete="off" />
+                    @if (form.controls.correo.hasError('email') && form.controls.correo.touched) {
+                      <mat-error>El correo no tiene un formato válido.</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+              </div>
+            }
+          }
+
+          <!-- Campos del reconocimiento -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Título</mat-label>
+            <input matInput formControlName="titulo" />
+            @if (form.controls.titulo.hasError('required') && form.controls.titulo.touched) {
+              <mat-error>El título es obligatorio.</mat-error>
+            }
+            @if (form.controls.titulo.hasError('maxlength') && form.controls.titulo.touched) {
+              <mat-error>El título no puede superar los 200 caracteres.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput formControlName="descripcion" rows="3"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Motivo</mat-label>
+            <textarea matInput formControlName="motivo" rows="2"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha del reconocimiento</mat-label>
+            <input matInput formControlName="fechaReconocimiento" [matDatepicker]="fechaPicker" />
+            <mat-datepicker-toggle matIconSuffix [for]="fechaPicker" />
+            <mat-datepicker #fechaPicker />
+            @if (
+              form.controls.fechaReconocimiento.hasError('required') &&
+              form.controls.fechaReconocimiento.touched
+            ) {
+              <mat-error>La fecha del reconocimiento es obligatoria.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Responsable de aprobación</mat-label>
+            <input matInput formControlName="responsableAprobacion" />
+          </mat-form-field>
+
+          @if (vm.formError(); as formError) {
+            <p class="form-error full-width" role="alert">{{ formError }}</p>
+          }
+
+          <div class="form-actions full-width">
+            <a mat-button routerLink="/reconocimientos">Cancelar</a>
+            <button
+              mat-flat-button
+              color="primary"
+              type="submit"
+              [disabled]="
+                guardando() ||
+                form.invalid ||
+                (!isEditMode && (!busquedaHecha() || buscando()))
+              "
+            >
+              @if (guardando()) {
+                <mat-spinner diameter="20" />
+              } @else {
+                {{ isEditMode ? 'Guardar cambios' : 'Registrar' }}
+              }
+            </button>
+          </div>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

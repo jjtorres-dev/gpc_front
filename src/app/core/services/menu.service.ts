@@ -12,6 +12,7 @@ const MENU_BY_ROLE: Record<Rol, MenuItem[]> = {
   Digitador: [
     { label: 'Actividades', icon: 'event', route: '/actividades' },
     { label: 'Participantes', icon: 'group', route: '/participantes' },
+    { label: 'Reconocimientos', icon: 'military_tech', route: '/reconocimientos' },
     { label: 'Ponentes y Firmantes', icon: 'campaign', route: '/ponentes-firmantes' },
     { label: 'Emisión de Certificados', icon: 'workspace_premium', route: '/emision' },
     { label: 'Reportes', icon: 'bar_chart', route: '/reportes' },
