@@ -26,7 +26,11 @@ export class ResetPasswordComponent {
   private readonly router = inject(Router);
 
   private readonly token = signal(this.route.snapshot.queryParamMap.get('token') ?? '');
+  private readonly email = signal(this.route.snapshot.queryParamMap.get('email') ?? '');
   readonly hasToken = computed(() => this.token().length > 0);
+  readonly hasEmail = computed(() => this.email().length > 0);
+  /** El enlace del correo debe traer token y email; si falta alguno no se puede resetear. */
+  readonly linkValid = computed(() => this.hasToken() && this.hasEmail());
 
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -41,7 +45,7 @@ export class ResetPasswordComponent {
   );
 
   submit(): void {
-    if (this.form.invalid || !this.hasToken()) {
+    if (this.form.invalid || !this.linkValid()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -49,7 +53,7 @@ export class ResetPasswordComponent {
     this.errorMessage.set(null);
     this.loading.set(true);
 
-    this.authService.resetPassword(this.token(), this.form.getRawValue().password).subscribe({
+    this.authService.resetPassword(this.token(), this.email(), this.form.getRawValue().password).subscribe({
       next: () => {
         this.loading.set(false);
         this.success.set(true);

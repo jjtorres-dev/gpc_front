@@ -60,8 +60,8 @@ export class AuthService {
     return this.api.forgotPassword({ email });
   }
 
-  resetPassword(token: string, password: string): Observable<void> {
-    return this.api.resetPassword({ token, password });
+  resetPassword(token: string, email: string, password: string): Observable<void> {
+    return this.api.resetPassword({ token, email, password, password_confirmation: password });
   }
 
   /** Limpia el estado local sin llamar al backend (usado por el interceptor de 401). */

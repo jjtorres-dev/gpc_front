@@ -46,7 +46,6 @@
             <span class="field-label">Tipo</span>
             <mat-radio-group formControlName="tipo" aria-label="Tipo de actividad">
               <mat-radio-button value="Capacitación">Capacitación</mat-radio-button>
-              <mat-radio-button value="Reconocimiento">Reconocimiento</mat-radio-button>
             </mat-radio-group>
             @if (form.controls.tipo.hasError('required') && form.controls.tipo.touched) {
               <span class="field-error">Selecciona un tipo de actividad.</span>
