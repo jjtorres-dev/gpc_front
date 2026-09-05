@@ -71,11 +71,9 @@
       </mat-card-actions>
     </mat-card>
 
+    <app-participantes-panel [actividadId]="item.id" [cerrada]="item.estado === 'Cerrada'" />
+
     <div class="related-sections">
-      <app-placeholder
-        title="Participantes"
-        message="Módulo de Participantes en desarrollo"
-      />
       <app-placeholder
         title="Certificados"
         message="Módulo de Certificados en desarrollo"

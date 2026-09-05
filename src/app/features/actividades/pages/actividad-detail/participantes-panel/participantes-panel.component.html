@@ -1,0 +1,178 @@
+<mat-card class="participantes-card">
+  <mat-card-header>
+    <mat-card-title>Participantes</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Alta de participante -->
+    <form class="alta-form" [formGroup]="form" (ngSubmit)="agregar()">
+      <div class="alta-row">
+        <mat-form-field appearance="outline" class="dni-field">
+          <mat-label>DNI</mat-label>
+          <input matInput formControlName="dni" inputmode="numeric" maxlength="8" autocomplete="off" />
+          @if (buscando()) {
+            <mat-spinner matSuffix diameter="18" />
+          }
+          @if (form.controls.dni.hasError('required') && form.controls.dni.touched) {
+            <mat-error>El DNI es obligatorio.</mat-error>
+          }
+          @if (form.controls.dni.hasError('pattern') && form.controls.dni.touched) {
+            <mat-error>El DNI debe tener 8 dígitos.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="tipo-field">
+          <mat-label>Tipo de participación</mat-label>
+          <mat-select formControlName="tipoParticipacion">
+            @for (tipo of tipos; track tipo) {
+              <mat-option [value]="tipo">{{ tipo }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      @if (busquedaHecha() && persona(); as encontrada) {
+        <div class="persona-info">
+          <mat-chip-set aria-label="Estado de la persona">
+            <mat-chip class="persona-chip-existente">
+              <mat-icon matChipAvatar>badge</mat-icon>
+              Persona existente
+            </mat-chip>
+          </mat-chip-set>
+          <dl class="persona-datos">
+            <div>
+              <dt>Nombre completo</dt>
+              <dd>{{ encontrada.nombreCompleto }}</dd>
+            </div>
+            <div>
+              <dt>Correo</dt>
+              <dd>{{ encontrada.correo || 'No registrado' }}</dd>
+            </div>
+          </dl>
+        </div>
+      } @else if (personaNueva) {
+        <div class="persona-nueva">
+          <p class="persona-nueva-hint">
+            <mat-icon>person_add</mat-icon>
+            Persona nueva, completa sus datos.
+          </p>
+          <div class="alta-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre completo</mat-label>
+              <input matInput formControlName="nombreCompleto" autocomplete="off" />
+              @if (form.controls.nombreCompleto.hasError('required') && form.controls.nombreCompleto.touched) {
+                <mat-error>El nombre completo es obligatorio.</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Correo (opcional)</mat-label>
+              <input matInput type="email" formControlName="correo" autocomplete="off" />
+              @if (form.controls.correo.hasError('email') && form.controls.correo.touched) {
+                <mat-error>El correo no tiene un formato válido.</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+      }
+
+      @if (vm.formError(); as formError) {
+        <p class="alta-error" role="alert">{{ formError }}</p>
+      }
+
+      <div class="alta-actions">
+        <span
+          [matTooltip]="
+            cerrada() ? 'No se pueden inscribir participantes en una actividad cerrada' : ''
+          "
+          [matTooltipDisabled]="!cerrada()"
+        >
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="cerrada() || form.invalid || buscando() || enviando() || !busquedaHecha()"
+          >
+            @if (enviando()) {
+              <mat-spinner diameter="20" />
+            } @else {
+              <ng-container><mat-icon>person_add</mat-icon> Agregar participante</ng-container>
+            }
+          </button>
+        </span>
+      </div>
+    </form>
+
+    <!-- Listado de participaciones -->
+    @if (vm.error(); as error) {
+      <div class="error-banner" role="alert">{{ error }}</div>
+    }
+
+    @if (vm.loading()) {
+      <div class="loading" aria-label="Cargando participantes">
+        <mat-spinner diameter="36" />
+      </div>
+    } @else {
+      <div class="tabla-wrapper">
+        <table mat-table [dataSource]="vm.participantes()" class="participantes-tabla">
+          <ng-container matColumnDef="dni">
+            <th mat-header-cell *matHeaderCellDef>DNI</th>
+            <td mat-cell *matCellDef="let row">{{ row.persona.dni }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="nombreCompleto">
+            <th mat-header-cell *matHeaderCellDef>Nombre completo</th>
+            <td mat-cell *matCellDef="let row">{{ row.persona.nombreCompleto }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="tipoParticipacion">
+            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+            <td mat-cell *matCellDef="let row">{{ row.tipoParticipacion }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="asistencia">
+            <th mat-header-cell *matHeaderCellDef>Asistencia</th>
+            <td mat-cell *matCellDef="let row">
+              <mat-slide-toggle
+                [checked]="row.asistencia"
+                (change)="onAsistenciaChange(row, $event)"
+                [aria-label]="'Asistencia de ' + row.persona.nombreCompleto"
+              />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let row" class="acciones-cell">
+              <span [matTooltip]="cerrada() ? 'La actividad está cerrada' : 'Retirar'">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  type="button"
+                  [disabled]="cerrada()"
+                  [attr.aria-label]="'Retirar a ' + row.persona.nombreCompleto"
+                  (click)="confirmarRetiro(row)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+          <tr mat-row *matRowDef="let row; columns: columnas"></tr>
+          <tr class="empty-row" *matNoDataRow>
+            <td [attr.colspan]="columnas.length">Aún no hay participantes inscritos.</td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="vm.meta().total"
+        [pageIndex]="vm.meta().page - 1"
+        [pageSize]="vm.meta().perPage"
+        [hidePageSize]="true"
+        (page)="cambiarPagina($event)"
+      />
+    }
+  </mat-card-content>
+</mat-card>

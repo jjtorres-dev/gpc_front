@@ -32,6 +32,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 export const MATERIAL_IMPORTS = [
@@ -55,5 +56,6 @@ export const MATERIAL_IMPORTS = [
   MatDatepickerModule,
   MatNativeDateModule,
   MatRadioModule,
+  MatSlideToggleModule,
   MatTooltipModule,
 ] as const;
