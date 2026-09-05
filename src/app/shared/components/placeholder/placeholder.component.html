@@ -1,9 +1,9 @@
-<section class="placeholder" aria-labelledby="placeholder-title">
+<section class="placeholder" [attr.aria-label]="displayTitle()">
   <mat-card class="placeholder-card">
     <mat-card-content>
       <mat-icon class="construction-icon" aria-hidden="true">construction</mat-icon>
-      <h1 id="placeholder-title">{{ title }}</h1>
-      <p>Este módulo está en desarrollo</p>
+      <h1>{{ displayTitle() }}</h1>
+      <p>{{ message() }}</p>
     </mat-card-content>
   </mat-card>
 </section>

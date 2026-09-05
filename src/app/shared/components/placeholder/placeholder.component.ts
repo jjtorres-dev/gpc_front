@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { MATERIAL_IMPORTS } from '../../material';
@@ -13,5 +13,9 @@ import { MATERIAL_IMPORTS } from '../../material';
 export class PlaceholderComponent {
   private readonly route = inject(ActivatedRoute);
 
-  readonly title = (this.route.snapshot.data['title'] as string | undefined) ?? 'Módulo';
+  readonly title = input<string>();
+  readonly message = input('Este módulo está en desarrollo');
+  readonly displayTitle = computed(
+    () => this.title() ?? (this.route.snapshot.data['title'] as string | undefined) ?? 'Módulo',
+  );
 }

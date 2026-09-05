@@ -59,9 +59,38 @@ export const routes: Routes = [
       {
         path: 'actividades',
         canActivate: [roleGuard],
-        data: { roles: ['Digitador'], title: 'Actividades' },
+        data: { roles: ['Digitador', 'Administrador'], title: 'Actividades' },
         loadComponent: () =>
-          import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
+          import('./features/actividades/pages/actividades-list/actividades-list.component').then(
+            (m) => m.ActividadesListComponent,
+          ),
+      },
+      {
+        path: 'actividades/nueva',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador', 'Administrador'], title: 'Nueva actividad' },
+        loadComponent: () =>
+          import('./features/actividades/pages/actividad-form/actividad-form.component').then(
+            (m) => m.ActividadFormComponent,
+          ),
+      },
+      {
+        path: 'actividades/:id/editar',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador', 'Administrador'], title: 'Editar actividad' },
+        loadComponent: () =>
+          import('./features/actividades/pages/actividad-form/actividad-form.component').then(
+            (m) => m.ActividadFormComponent,
+          ),
+      },
+      {
+        path: 'actividades/:id',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador', 'Administrador'], title: 'Detalle de actividad' },
+        loadComponent: () =>
+          import('./features/actividades/pages/actividad-detail/actividad-detail.component').then(
+            (m) => m.ActividadDetailComponent,
+          ),
       },
       {
         path: 'participantes',

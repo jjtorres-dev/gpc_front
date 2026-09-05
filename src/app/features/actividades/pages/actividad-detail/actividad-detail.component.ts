@@ -1,0 +1,31 @@
+import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+
+import { Actividad } from '../../../../core/models/actividad.model';
+import { PlaceholderComponent } from '../../../../shared/components/placeholder/placeholder.component';
+import { MATERIAL_IMPORTS } from '../../../../shared/material';
+import { ActividadesService } from '../../services/actividades.service';
+
+@Component({
+  selector: 'app-actividad-detail',
+  standalone: true,
+  imports: [DatePipe, RouterLink, PlaceholderComponent, ...MATERIAL_IMPORTS],
+  templateUrl: './actividad-detail.component.html',
+  styleUrl: './actividad-detail.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ActividadDetailComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+
+  readonly actividadesService = inject(ActividadesService);
+  readonly actividad = signal<Actividad | null>(null);
+  readonly actividadId = Number(this.route.snapshot.paramMap.get('id'));
+
+  ngOnInit(): void {
+    this.actividadesService.obtener(this.actividadId).subscribe({
+      next: (actividad) => this.actividad.set(actividad),
+      error: () => undefined,
+    });
+  }
+}

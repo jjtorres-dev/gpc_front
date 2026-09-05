@@ -1,0 +1,118 @@
+<section class="page">
+  <div class="page-header">
+    <div>
+      <h1>{{ isEditMode ? 'Editar actividad' : 'Nueva actividad' }}</h1>
+      <p>{{ isEditMode ? 'Actualiza la información de la actividad.' : 'Registra una nueva actividad.' }}</p>
+    </div>
+    <a mat-button routerLink="/actividades">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </a>
+  </div>
+
+  @if (actividadCerrada()) {
+    <div class="closed-banner" role="alert">
+      <mat-icon>lock</mat-icon>
+      Esta actividad está cerrada y ya no puede modificarse.
+    </div>
+  }
+
+  @if (actividadesService.error(); as error) {
+    <div class="error-banner" role="alert">{{ error }}</div>
+  }
+
+  <mat-card>
+    <mat-card-content>
+      @if (isEditMode && actividadesService.loading() && !form.get('nombre')?.value) {
+        <div class="loading" aria-label="Cargando actividad">
+          <mat-spinner diameter="42" />
+        </div>
+      } @else {
+        <form class="activity-form" [formGroup]="form" (ngSubmit)="guardar()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre" />
+            @if (form.controls.nombre.hasError('required') && form.controls.nombre.touched) {
+              <mat-error>El nombre es obligatorio.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput formControlName="descripcion" rows="4"></textarea>
+          </mat-form-field>
+
+          <div class="field-group full-width">
+            <span class="field-label">Tipo</span>
+            <mat-radio-group formControlName="tipo" aria-label="Tipo de actividad">
+              <mat-radio-button value="Capacitación">Capacitación</mat-radio-button>
+              <mat-radio-button value="Reconocimiento">Reconocimiento</mat-radio-button>
+            </mat-radio-group>
+            @if (form.controls.tipo.hasError('required') && form.controls.tipo.touched) {
+              <span class="field-error">Selecciona un tipo de actividad.</span>
+            }
+          </div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de inicio</mat-label>
+            <input matInput formControlName="fechaInicio" [matDatepicker]="inicioPicker" />
+            <mat-datepicker-toggle matIconSuffix [for]="inicioPicker" />
+            <mat-datepicker #inicioPicker />
+            @if (form.controls.fechaInicio.hasError('required') && form.controls.fechaInicio.touched) {
+              <mat-error>La fecha de inicio es obligatoria.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de fin</mat-label>
+            <input matInput formControlName="fechaFin" [matDatepicker]="finPicker" />
+            <mat-datepicker-toggle matIconSuffix [for]="finPicker" />
+            <mat-datepicker #finPicker />
+            @if (form.controls.fechaFin.hasError('required') && form.controls.fechaFin.touched) {
+              <mat-error>La fecha de fin es obligatoria.</mat-error>
+            }
+          </mat-form-field>
+
+          @if (form.hasError('rangoFechas') && (form.controls.fechaInicio.touched || form.controls.fechaFin.touched)) {
+            <div class="date-error full-width" role="alert">
+              La fecha de fin no puede ser anterior a la fecha de inicio.
+            </div>
+          }
+
+          <mat-form-field appearance="outline">
+            <mat-label>Sede</mat-label>
+            <input matInput formControlName="sede" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Área organizadora</mat-label>
+            <mat-select formControlName="idArea">
+              <mat-option [value]="null">Selecciona un área</mat-option>
+              @for (area of actividadesService.areas(); track area.id) {
+                <mat-option [value]="area.id">{{ area.nombre }}</mat-option>
+              }
+            </mat-select>
+            @if (form.controls.idArea.hasError('required') && form.controls.idArea.touched) {
+              <mat-error>El área organizadora es obligatoria.</mat-error>
+            }
+            @if (actividadesService.areas().length === 0 && actividadesService.areasError(); as areasError) {
+              <mat-hint>{{ areasError }}</mat-hint>
+            }
+          </mat-form-field>
+
+          <div class="form-actions full-width">
+            <a mat-button routerLink="/actividades">Cancelar</a>
+            <button
+              mat-flat-button
+              color="primary"
+              type="submit"
+              [disabled]="actividadesService.loading() || actividadCerrada()"
+            >
+              {{ isEditMode ? 'Guardar cambios' : 'Crear actividad' }}
+            </button>
+          </div>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

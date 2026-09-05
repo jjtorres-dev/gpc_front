@@ -29,6 +29,10 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export const MATERIAL_IMPORTS = [
   MatToolbarModule,
@@ -48,4 +52,8 @@ export const MATERIAL_IMPORTS = [
   MatListModule,
   MatProgressSpinnerModule,
   MatChipsModule,
+  MatDatepickerModule,
+  MatNativeDateModule,
+  MatRadioModule,
+  MatTooltipModule,
 ] as const;

@@ -1,0 +1,86 @@
+<section class="page">
+  <div class="page-header">
+    <h1>Detalle de actividad</h1>
+    <a mat-button routerLink="/actividades">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </a>
+  </div>
+
+  @if (actividadesService.error(); as error) {
+    <div class="error-banner" role="alert">{{ error }}</div>
+  }
+
+  @if (actividadesService.loading()) {
+    <div class="loading" aria-label="Cargando actividad">
+      <mat-spinner diameter="42" />
+    </div>
+  } @else {
+    @if (actividad(); as item) {
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>{{ item.nombre }}</mat-card-title>
+        <mat-card-subtitle>{{ item.tipo }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <dl class="details-grid">
+          <div>
+            <dt>Estado</dt>
+            <dd>
+              <mat-chip-set aria-label="Estado de la actividad">
+                <mat-chip [class.active-chip]="item.estado === 'Activa'" [class.closed-chip]="item.estado === 'Cerrada'">
+                  {{ item.estado }}
+                </mat-chip>
+              </mat-chip-set>
+            </dd>
+          </div>
+          <div>
+            <dt>Fecha de inicio</dt>
+            <dd>{{ item.fechaInicio | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
+          </div>
+          <div>
+            <dt>Fecha de fin</dt>
+            <dd>{{ item.fechaFin | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
+          </div>
+          <div>
+            <dt>Área organizadora</dt>
+            <dd>{{ item.area?.nombre || 'Sin área' }}</dd>
+          </div>
+          <div>
+            <dt>Sede</dt>
+            <dd>{{ item.sede || 'No especificada' }}</dd>
+          </div>
+          <div class="full-width">
+            <dt>Descripción</dt>
+            <dd>{{ item.descripcion || 'Sin descripción' }}</dd>
+          </div>
+        </dl>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <a
+          mat-flat-button
+          color="primary"
+          [routerLink]="['/actividades', item.id, 'editar']"
+          [class.disabled-link]="item.estado === 'Cerrada'"
+          [attr.aria-disabled]="item.estado === 'Cerrada'"
+          (click)="item.estado === 'Cerrada' && $event.preventDefault()"
+        >
+          <mat-icon>edit</mat-icon>
+          Editar
+        </a>
+      </mat-card-actions>
+    </mat-card>
+
+    <div class="related-sections">
+      <app-placeholder
+        title="Participantes"
+        message="Módulo de Participantes en desarrollo"
+      />
+      <app-placeholder
+        title="Certificados"
+        message="Módulo de Certificados en desarrollo"
+      />
+    </div>
+    }
+  }
+</section>

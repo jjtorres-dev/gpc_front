@@ -1,0 +1,165 @@
+<section class="page">
+  <div class="page-header">
+    <div>
+      <h1>Actividades</h1>
+      <p>Gestiona las actividades de capacitación y reconocimiento.</p>
+    </div>
+    <a mat-flat-button color="primary" routerLink="/actividades/nueva">
+      <mat-icon>add</mat-icon>
+      Nueva actividad
+    </a>
+  </div>
+
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <form class="filters" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="tipo">
+            <mat-option value="">Todos</mat-option>
+            <mat-option value="Capacitación">Capacitación</mat-option>
+            <mat-option value="Reconocimiento">Reconocimiento</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="estado">
+            <mat-option value="">Todos</mat-option>
+            <mat-option value="Activa">Activa</mat-option>
+            <mat-option value="Cerrada">Cerrada</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha de inicio</mat-label>
+          <input matInput formControlName="fechaInicio" [matDatepicker]="fechaInicioPicker" />
+          <mat-datepicker-toggle matIconSuffix [for]="fechaInicioPicker" />
+          <mat-datepicker #fechaInicioPicker />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Área organizadora</mat-label>
+          <mat-select formControlName="areaId">
+            <mat-option [value]="null">Todas</mat-option>
+            @for (area of actividadesService.areas(); track area.id) {
+              <mat-option [value]="area.id">{{ area.nombre }}</mat-option>
+            }
+          </mat-select>
+          @if (actividadesService.areas().length === 0 && actividadesService.areasError(); as areasError) {
+            <mat-hint>{{ areasError }}</mat-hint>
+          }
+        </mat-form-field>
+
+        <div class="filter-actions">
+          <button mat-flat-button color="primary" type="submit">Filtrar</button>
+          <button mat-button type="button" (click)="limpiarFiltros()">Limpiar</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  @if (actividadesService.error(); as error) {
+    <div class="error-banner" role="alert">{{ error }}</div>
+  }
+
+  <mat-card class="table-card">
+    @if (actividadesService.loading()) {
+      <div class="loading" aria-label="Cargando actividades">
+        <mat-spinner diameter="42" />
+      </div>
+    } @else {
+      <div class="table-container">
+        <table mat-table [dataSource]="actividadesService.actividades()">
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef>Nombre</th>
+            <td mat-cell *matCellDef="let actividad">{{ actividad.nombre }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="tipo">
+            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+            <td mat-cell *matCellDef="let actividad">{{ actividad.tipo }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="fechaInicio">
+            <th mat-header-cell *matHeaderCellDef>Fecha de inicio</th>
+            <td mat-cell *matCellDef="let actividad">
+              {{ actividad.fechaInicio | date: 'dd/MM/yyyy' : 'UTC' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fechaFin">
+            <th mat-header-cell *matHeaderCellDef>Fecha de fin</th>
+            <td mat-cell *matCellDef="let actividad">
+              {{ actividad.fechaFin | date: 'dd/MM/yyyy' : 'UTC' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="area">
+            <th mat-header-cell *matHeaderCellDef>Área</th>
+            <td mat-cell *matCellDef="let actividad">{{ actividad.area?.nombre || 'Sin área' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let actividad">
+              <mat-chip-set aria-label="Estado de la actividad">
+                <mat-chip [class.active-chip]="actividad.estado === 'Activa'" [class.closed-chip]="actividad.estado === 'Cerrada'">
+                  {{ actividad.estado }}
+                </mat-chip>
+              </mat-chip-set>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let actividad" class="actions-cell">
+              <a mat-icon-button [routerLink]="['/actividades', actividad.id]" matTooltip="Ver detalle" aria-label="Ver detalle">
+                <mat-icon>visibility</mat-icon>
+              </a>
+              <span
+                [matTooltip]="actividad.estado === 'Cerrada' ? 'Las actividades cerradas no se pueden editar' : 'Editar'"
+              >
+                <a
+                  mat-icon-button
+                  [routerLink]="['/actividades', actividad.id, 'editar']"
+                  [class.disabled-link]="actividad.estado === 'Cerrada'"
+                  [attr.aria-disabled]="actividad.estado === 'Cerrada'"
+                  [tabIndex]="actividad.estado === 'Cerrada' ? -1 : 0"
+                  (click)="actividad.estado === 'Cerrada' && $event.preventDefault()"
+                >
+                  <mat-icon>edit</mat-icon>
+                </a>
+              </span>
+              <button
+                mat-icon-button
+                type="button"
+                [disabled]="actividad.estado === 'Cerrada'"
+                [matTooltip]="actividad.estado === 'Cerrada' ? 'La actividad ya está cerrada' : 'Cerrar actividad'"
+                aria-label="Cerrar actividad"
+                (click)="confirmarCierre(actividad)"
+              >
+                <mat-icon>lock</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr class="empty-row" *matNoDataRow>
+            <td [attr.colspan]="displayedColumns.length">No se encontraron actividades.</td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="actividadesService.meta().total"
+        [pageIndex]="actividadesService.meta().page - 1"
+        [pageSize]="actividadesService.meta().perPage"
+        [hidePageSize]="true"
+        (page)="cambiarPagina($event)"
+        aria-label="Paginación de actividades"
+      />
+    }
+  </mat-card>
+</section>

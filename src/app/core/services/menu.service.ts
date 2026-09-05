@@ -6,6 +6,7 @@ import { Rol, Usuario } from '../models/usuario.model';
 const MENU_BY_ROLE: Record<Rol, MenuItem[]> = {
   Administrador: [
     { label: 'Gestión de Usuarios', icon: 'people', route: '/usuarios' },
+    { label: 'Actividades', icon: 'event', route: '/actividades' },
     { label: 'Reportes', icon: 'bar_chart', route: '/reportes' },
   ],
   Digitador: [
