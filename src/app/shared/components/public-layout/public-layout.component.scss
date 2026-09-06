@@ -1,0 +1,66 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.public-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #f5f5f5;
+}
+
+.toolbar {
+  flex: 0 0 auto;
+  height: auto;
+  padding-block: 0.5rem;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.system-name {
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.muni-name {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.tabs {
+  flex: 0 0 auto;
+  background: #fff;
+  border-block-end: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.content {
+  flex: 1 1 auto;
+}
+
+.content-inner {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2.5rem;
+}
+
+.footer {
+  flex: 0 0 auto;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.6);
+  border-block-start: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 600px) {
+  .content-inner {
+    padding: 1rem 0.75rem 2rem;
+  }
+}

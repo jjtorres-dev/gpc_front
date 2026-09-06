@@ -1,0 +1,96 @@
+<app-public-layout>
+  @if (!codigo()) {
+    <!-- Formulario para pegar un código a mano -->
+    <h1 class="titulo">Verificación de certificado</h1>
+    <p class="intro">
+      Escanea el código QR del certificado o pega aquí su código para verificar su autenticidad.
+    </p>
+
+    <form class="codigo-form" [formGroup]="form" (ngSubmit)="irACodigo()">
+      <mat-form-field appearance="outline" class="codigo-field">
+        <mat-label>Código del certificado</mat-label>
+        <input matInput formControlName="codigo" autocomplete="off" placeholder="Ej. CERT-2026-0001" />
+        @if (form.controls.codigo.hasError('required') && form.controls.codigo.touched) {
+          <mat-error>Ingresa el código del certificado.</mat-error>
+        }
+      </mat-form-field>
+      <button mat-flat-button color="primary" type="submit">
+        <mat-icon>verified</mat-icon>
+        Verificar
+      </button>
+    </form>
+  } @else if (cargando()) {
+    <div class="loading" aria-label="Verificando certificado">
+      <mat-spinner diameter="42" />
+    </div>
+  } @else if (noEncontrado()) {
+    <mat-card class="estado-card">
+      <mat-card-content>
+        <mat-icon class="estado-icon">help_outline</mat-icon>
+        <p class="estado-texto">No se encontró ningún certificado con este código</p>
+        <p class="codigo-consultado">Código consultado: {{ codigo() }}</p>
+        <a mat-stroked-button routerLink="/verificar">Verificar otro código</a>
+      </mat-card-content>
+    </mat-card>
+  } @else if (error()) {
+    <div class="error-banner" role="alert">{{ error() }}</div>
+    <a mat-stroked-button routerLink="/verificar">Verificar otro código</a>
+  } @else {
+    @if (detalle(); as cert) {
+      <mat-card class="detalle-card">
+        <mat-card-content>
+        @if (esEstadoValido(cert.estado)) {
+          <div class="estado-grande estado-valido-txt">
+            <mat-icon>verified</mat-icon>
+            CERTIFICADO VÁLIDO
+          </div>
+        } @else {
+          <div class="estado-grande estado-anulado-txt">
+            <mat-icon>cancel</mat-icon>
+            CERTIFICADO ANULADO
+            @if (cert.reemplazadoPor) {
+              <span class="reemplazo">— reemplazado por {{ cert.reemplazadoPor }}</span>
+            }
+          </div>
+        }
+
+        <dl class="datos">
+          <div>
+            <dt>Nombre completo</dt>
+            <dd>{{ cert.nombreCompleto }}</dd>
+          </div>
+          <div>
+            <dt>Tipo</dt>
+            <dd>{{ cert.tipo }}</dd>
+          </div>
+          <div>
+            <dt>Actividad / motivo</dt>
+            <dd>{{ cert.nombreActividad }}</dd>
+          </div>
+          <div>
+            <dt>Fecha de emisión</dt>
+            <dd>{{ cert.fechaEmision | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
+          </div>
+          <div>
+            <dt>Código</dt>
+            <dd>{{ cert.codigo }}</dd>
+          </div>
+        </dl>
+
+        <div class="acciones">
+          <button mat-flat-button color="primary" type="button" [disabled]="descargando()" (click)="verPdf()">
+            <mat-icon>visibility</mat-icon>
+            Ver PDF
+          </button>
+          <button mat-stroked-button type="button" [disabled]="descargando()" (click)="descargar()">
+            <mat-icon>download</mat-icon>
+            Descargar
+          </button>
+        </div>
+        </mat-card-content>
+      </mat-card>
+
+      <a class="otro-codigo" mat-button routerLink="/verificar">Verificar otro código</a>
+    }
+  }
+</app-public-layout>

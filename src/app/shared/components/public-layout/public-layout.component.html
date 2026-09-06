@@ -1,0 +1,38 @@
+<div class="public-layout">
+  <mat-toolbar color="primary" class="toolbar">
+    <div class="brand">
+      <span class="system-name">Sistema de Certificados Digitales</span>
+      <span class="muni-name">Municipalidad Distrital de Morales</span>
+    </div>
+  </mat-toolbar>
+
+  <nav mat-tab-nav-bar [tabPanel]="tabPanel" class="tabs">
+    <a
+      mat-tab-link
+      routerLink="/portal"
+      routerLinkActive
+      #consultaLink="routerLinkActive"
+      [routerLinkActiveOptions]="{ exact: true }"
+      [active]="consultaLink.isActive"
+    >
+      Consulta por DNI
+    </a>
+    <a
+      mat-tab-link
+      routerLink="/verificar"
+      routerLinkActive
+      #verificarLink="routerLinkActive"
+      [active]="verificarLink.isActive"
+    >
+      Verificación QR o Código
+    </a>
+  </nav>
+
+  <mat-tab-nav-panel #tabPanel class="content">
+    <div class="content-inner">
+      <ng-content />
+    </div>
+  </mat-tab-nav-panel>
+
+  <footer class="footer">Acreditado mediante Firma Digital Ley N° 27269</footer>
+</div>

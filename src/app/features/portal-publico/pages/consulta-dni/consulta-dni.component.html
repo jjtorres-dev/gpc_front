@@ -1,0 +1,91 @@
+<app-public-layout>
+  <h1 class="titulo">Consulta de certificados</h1>
+  <p class="intro">
+    Ingresa tu número de DNI para ver los certificados emitidos a tu nombre.
+  </p>
+
+  <form class="busqueda-form" [formGroup]="form" (ngSubmit)="buscar()">
+    <mat-form-field appearance="outline" class="dni-field">
+      <mat-label>DNI</mat-label>
+      <input
+        matInput
+        formControlName="dni"
+        inputmode="numeric"
+        maxlength="8"
+        autocomplete="off"
+        placeholder="Ej. 12345678"
+      />
+      @if (form.controls.dni.hasError('required') && form.controls.dni.touched) {
+        <mat-error>El DNI es obligatorio.</mat-error>
+      }
+      @if (form.controls.dni.hasError('pattern') && form.controls.dni.touched) {
+        <mat-error>El DNI debe tener exactamente 8 dígitos.</mat-error>
+      }
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit" [disabled]="buscando()">
+      @if (buscando()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        <ng-container><mat-icon>search</mat-icon> Buscar</ng-container>
+      }
+    </button>
+  </form>
+
+  @if (error(); as error) {
+    <div class="error-banner" role="alert">{{ error }}</div>
+  }
+
+  @if (busquedaHecha() && !buscando()) {
+    @if (resultados().length === 0) {
+      <p class="vacio">No se encontraron certificados</p>
+    } @else {
+      <div class="cards">
+        @for (cert of resultados(); track cert.codigo) {
+          <mat-card class="cert-card">
+            <mat-card-content>
+              <h2 class="cert-actividad">{{ cert.nombreActividad }}</h2>
+
+              <mat-chip-set class="cert-chips" aria-label="Datos del certificado">
+                <mat-chip class="chip-tipo">{{ cert.tipo }}</mat-chip>
+                @if (esEstadoValido(cert.estado)) {
+                  <mat-chip class="chip-valido">Válido</mat-chip>
+                } @else {
+                  <mat-chip class="chip-anulado">Anulado</mat-chip>
+                }
+              </mat-chip-set>
+
+              <p class="cert-meta">
+                <mat-icon>event</mat-icon>
+                Emitido el {{ cert.fechaEmision | date: 'dd/MM/yyyy' : 'UTC' }}
+              </p>
+              <p class="cert-codigo">Código: {{ cert.codigo }}</p>
+            </mat-card-content>
+
+            <mat-card-actions align="end">
+              <button
+                mat-button
+                color="primary"
+                type="button"
+                [disabled]="descargandoCodigo() === cert.codigo"
+                (click)="verPdf(cert.codigo)"
+              >
+                <mat-icon>visibility</mat-icon>
+                Ver
+              </button>
+              <button
+                mat-button
+                type="button"
+                [disabled]="descargandoCodigo() === cert.codigo"
+                (click)="descargar(cert.codigo)"
+              >
+                <mat-icon>download</mat-icon>
+                Descargar
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    }
+  }
+</app-public-layout>

@@ -1,0 +1,147 @@
+:host {
+  display: block;
+}
+
+.titulo {
+  margin: 0 0 0.25rem;
+  font-size: 1.4rem;
+}
+
+.intro {
+  margin: 0 0 1.5rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.codigo-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.codigo-field {
+  flex: 1 1 260px;
+}
+
+.codigo-form button {
+  margin-block-start: 0.35rem;
+}
+
+.loading {
+  display: grid;
+  min-height: 240px;
+  place-items: center;
+}
+
+.detalle-card {
+  margin-block-end: 1rem;
+}
+
+.estado-grande {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-block-end: 1.25rem;
+}
+
+.estado-valido-txt {
+  color: #176b2c;
+  background: #d9f4df;
+}
+
+.estado-anulado-txt {
+  color: #b3261e;
+  background: #fde8e8;
+}
+
+.reemplazo {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 2rem;
+  margin: 0 0 1.5rem;
+}
+
+.datos div {
+  min-width: 0;
+}
+
+.datos dt {
+  margin-block-end: 0.2rem;
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.datos dd {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.estado-card {
+  margin-block-end: 1rem;
+  text-align: center;
+}
+
+.estado-card mat-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding-block: 1.5rem;
+}
+
+.estado-icon {
+  font-size: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.estado-texto {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.codigo-consultado {
+  margin: 0 0 0.75rem;
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 0.9rem;
+}
+
+.otro-codigo {
+  display: inline-block;
+}
+
+.error-banner {
+  margin-block-end: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: 4px;
+  color: #8a1c1c;
+  background: #fde8e8;
+}
+
+@media (max-width: 600px) {
+  .datos {
+    grid-template-columns: 1fr;
+  }
+}

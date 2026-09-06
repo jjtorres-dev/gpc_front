@@ -36,6 +36,30 @@ export const routes: Routes = [
       ),
   },
 
+  // Portal público: accesible sin sesión (como /login), sin authGuard ni layout interno.
+  {
+    path: 'portal',
+    loadComponent: () =>
+      import('./features/portal-publico/pages/consulta-dni/consulta-dni.component').then(
+        (m) => m.ConsultaDniComponent,
+      ),
+  },
+  {
+    path: 'verificar',
+    loadComponent: () =>
+      import('./features/portal-publico/pages/verificar/verificar.component').then(
+        (m) => m.VerificarComponent,
+      ),
+  },
+  {
+    // Ruta EN LA RAÍZ: los QR ya generados apuntan literalmente a /verificar/:codigo.
+    path: 'verificar/:codigo',
+    loadComponent: () =>
+      import('./features/portal-publico/pages/verificar/verificar.component').then(
+        (m) => m.VerificarComponent,
+      ),
+  },
+
   {
     path: '',
     canActivate: [authGuard],
