@@ -1,0 +1,60 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Editar ponente' : 'Registrar ponente' }}</h2>
+
+<mat-dialog-content>
+  <form id="ponente-form" class="ponente-form" [formGroup]="form" (ngSubmit)="guardar()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre completo</mat-label>
+      <input matInput formControlName="nombreCompleto" autocomplete="off" />
+      @if (form.controls.nombreCompleto.hasError('required') && form.controls.nombreCompleto.touched) {
+        <mat-error>El nombre completo es obligatorio.</mat-error>
+      }
+      @if (form.controls.nombreCompleto.hasError('maxlength') && form.controls.nombreCompleto.touched) {
+        <mat-error>No puede superar los 200 caracteres.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="dni-field">
+      <mat-label>DNI (opcional)</mat-label>
+      <input matInput formControlName="dni" inputmode="numeric" maxlength="8" autocomplete="off" />
+      @if (form.controls.dni.hasError('pattern') && form.controls.dni.touched) {
+        <mat-error>El DNI debe tener 8 dígitos.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Institución (opcional)</mat-label>
+      <input matInput formControlName="institucion" autocomplete="off" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Cargo (opcional)</mat-label>
+      <input matInput formControlName="cargo" autocomplete="off" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Especialidad (opcional)</mat-label>
+      <input matInput formControlName="especialidad" autocomplete="off" />
+    </mat-form-field>
+
+    @if (vm.formError(); as formError) {
+      <p class="form-error full-width" role="alert">{{ formError }}</p>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" [mat-dialog-close]="undefined">Cancelar</button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="submit"
+    form="ponente-form"
+    [disabled]="guardando() || form.invalid"
+  >
+    @if (guardando()) {
+      <mat-spinner diameter="20" />
+    } @else {
+      {{ isEditMode ? 'Guardar cambios' : 'Registrar' }}
+    }
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,55 @@
+:host {
+  display: block;
+}
+
+.toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block-end: 1rem;
+}
+
+.search-field {
+  width: 100%;
+  max-width: 420px;
+}
+
+.tabla-wrapper {
+  overflow-x: auto;
+}
+
+.ponentes-tabla {
+  width: 100%;
+}
+
+.acciones-cell {
+  text-align: end;
+  white-space: nowrap;
+}
+
+.empty-row td {
+  padding: 1rem;
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.error-banner {
+  margin-block-end: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: 4px;
+  color: #8a1c1c;
+  background: #fde8e8;
+}
+
+.loading {
+  display: grid;
+  min-height: 240px;
+  place-items: center;
+}
+
+@media (max-width: 700px) {
+  .toolbar {
+    flex-direction: column;
+  }
+}

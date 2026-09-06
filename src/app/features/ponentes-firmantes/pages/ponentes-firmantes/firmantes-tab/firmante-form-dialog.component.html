@@ -1,0 +1,99 @@
+<h2 mat-dialog-title>Registrar firmante</h2>
+
+<mat-dialog-content>
+  <form id="firmante-form" class="firmante-form" [formGroup]="form" (ngSubmit)="guardar()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Usuario</mat-label>
+      <mat-select formControlName="idUsuario">
+        @if (vm.disponiblesLoading()) {
+          <mat-option disabled>Cargando usuarios…</mat-option>
+        } @else if (vm.disponibles().length === 0) {
+          <mat-option disabled>No hay usuarios disponibles</mat-option>
+        } @else {
+          @for (usuario of vm.disponibles(); track usuario.id) {
+            <mat-option [value]="usuario.id">
+              {{ usuario.nombreCompleto }} ({{ usuario.rol }})
+            </mat-option>
+          }
+        }
+      </mat-select>
+      @if (form.controls.idUsuario.hasError('required') && form.controls.idUsuario.touched) {
+        <mat-error>Selecciona un usuario.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Cargo</mat-label>
+      <input matInput formControlName="cargo" autocomplete="off" />
+      @if (form.controls.cargo.hasError('required') && form.controls.cargo.touched) {
+        <mat-error>El cargo es obligatorio.</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="archivo-field full-width">
+      <span class="field-label">Certificado digital (.pfx / .p12, máx. 2 MB)</span>
+      <div class="archivo-row">
+        <button mat-stroked-button type="button" (click)="fileInput.click()">
+          <mat-icon>upload_file</mat-icon>
+          Seleccionar archivo
+        </button>
+        <span class="archivo-nombre">
+          {{ archivo()?.name || 'Ningún archivo seleccionado' }}
+        </span>
+        <input
+          #fileInput
+          type="file"
+          class="archivo-input-oculto"
+          accept=".pfx,.p12"
+          (change)="onArchivoSeleccionado($event)"
+        />
+      </div>
+      @if (archivoError(); as archivoError) {
+        <p class="archivo-error" role="alert">{{ archivoError }}</p>
+      }
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Contraseña del certificado</mat-label>
+      <input
+        matInput
+        [type]="hidePassphrase() ? 'password' : 'text'"
+        formControlName="passphrase"
+        autocomplete="off"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="hidePassphrase.set(!hidePassphrase())"
+        [attr.aria-label]="hidePassphrase() ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+      >
+        <mat-icon>{{ hidePassphrase() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      @if (form.controls.passphrase.hasError('required') && form.controls.passphrase.touched) {
+        <mat-error>La contraseña es obligatoria.</mat-error>
+      }
+    </mat-form-field>
+
+    @if (vm.formError(); as formError) {
+      <p class="form-error full-width" role="alert">{{ formError }}</p>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" [mat-dialog-close]="undefined">Cancelar</button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="submit"
+    form="firmante-form"
+    [disabled]="guardando() || form.invalid || !archivo()"
+  >
+    @if (guardando()) {
+      <mat-spinner diameter="20" />
+    } @else {
+      Registrar
+    }
+  </button>
+</mat-dialog-actions>

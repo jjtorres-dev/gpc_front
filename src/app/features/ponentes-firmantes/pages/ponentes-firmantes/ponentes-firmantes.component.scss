@@ -1,0 +1,32 @@
+:host {
+  display: block;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.page-header {
+  margin-block-end: 1.25rem;
+}
+
+.page-header h1 {
+  margin: 0 0 0.25rem;
+}
+
+.page-header p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.tab-body {
+  padding-block-start: 1.5rem;
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 1rem;
+  }
+}

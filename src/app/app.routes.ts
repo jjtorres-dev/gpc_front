@@ -129,9 +129,11 @@ export const routes: Routes = [
       {
         path: 'ponentes-firmantes',
         canActivate: [roleGuard],
-        data: { roles: ['Digitador'], title: 'Ponentes y Firmantes' },
+        data: { roles: ['Digitador', 'Administrador'], title: 'Ponentes y Firmantes' },
         loadComponent: () =>
-          import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
+          import(
+            './features/ponentes-firmantes/pages/ponentes-firmantes/ponentes-firmantes.component'
+          ).then((m) => m.PonentesFirmantesComponent),
       },
       {
         path: 'emision',

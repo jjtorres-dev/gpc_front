@@ -1,0 +1,72 @@
+<div class="toolbar">
+  <p class="hint">
+    Usuarios con un certificado digital cargado para firmar certificados emitidos.
+  </p>
+  <button mat-flat-button color="primary" type="button" (click)="abrirFormulario()">
+    <mat-icon>add</mat-icon>
+    Registrar firmante
+  </button>
+</div>
+
+@if (vm.error(); as error) {
+  <div class="error-banner" role="alert">{{ error }}</div>
+}
+
+@if (vm.loading()) {
+  <div class="loading" aria-label="Cargando firmantes">
+    <mat-spinner diameter="42" />
+  </div>
+} @else if (vm.firmantes().length === 0) {
+  <p class="empty">Aún no hay firmantes registrados.</p>
+} @else {
+  <div class="cards-grid">
+    @for (firmante of vm.firmantes(); track firmante.id) {
+      <mat-card class="firmante-card">
+        <mat-card-header>
+          <mat-card-title>{{ firmante.usuario.nombreCompleto }}</mat-card-title>
+          <mat-card-subtitle>{{ firmante.usuario.cargo }}</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <p class="archivo">
+            <mat-icon>description</mat-icon>
+            {{ firmante.nombreArchivo }}
+          </p>
+          <p class="fecha">
+            <mat-icon>event</mat-icon>
+            {{ firmante.fechaRegistro | date: 'dd/MM/yyyy' : 'UTC' }}
+          </p>
+          <mat-chip-set aria-label="Estado de la clave">
+            <mat-chip class="clave-chip" disabled>
+              <mat-icon matChipAvatar>lock</mat-icon>
+              Clave cifrada
+            </mat-chip>
+          </mat-chip-set>
+        </mat-card-content>
+
+        @if (puedeEliminar()) {
+          <mat-card-actions align="end">
+            <button
+              mat-button
+              color="warn"
+              type="button"
+              (click)="confirmarEliminacion(firmante)"
+              [attr.aria-label]="'Eliminar firmante ' + firmante.usuario.nombreCompleto"
+            >
+              <mat-icon>delete</mat-icon>
+              Eliminar
+            </button>
+          </mat-card-actions>
+        }
+      </mat-card>
+    }
+  </div>
+
+  <mat-paginator
+    [length]="vm.meta().total"
+    [pageIndex]="vm.meta().page - 1"
+    [pageSize]="vm.meta().perPage"
+    [hidePageSize]="true"
+    (page)="cambiarPagina($event)"
+  />
+}

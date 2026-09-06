@@ -7,6 +7,7 @@ const MENU_BY_ROLE: Record<Rol, MenuItem[]> = {
   Administrador: [
     { label: 'Gestión de Usuarios', icon: 'people', route: '/usuarios' },
     { label: 'Actividades', icon: 'event', route: '/actividades' },
+    { label: 'Ponentes y Firmantes', icon: 'campaign', route: '/ponentes-firmantes' },
     { label: 'Reportes', icon: 'bar_chart', route: '/reportes' },
   ],
   Digitador: [
