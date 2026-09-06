@@ -76,9 +76,9 @@ export const routes: Routes = [
       {
         path: 'reportes',
         canActivate: [roleGuard],
-        data: { roles: ['Administrador', 'Digitador', 'Gerencial'], title: 'Reportes' },
+        data: { roles: ['Administrador', 'Gerencial'], title: 'Reportes' },
         loadComponent: () =>
-          import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
+          import('./features/reportes/pages/reportes/reportes.component').then((m) => m.ReportesComponent),
       },
       {
         path: 'actividades',
@@ -171,7 +171,7 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['Gerencial'], title: 'Dashboard' },
         loadComponent: () =>
-          import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
+          import('./features/dashboard/pages/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
     ],
   },

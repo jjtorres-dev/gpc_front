@@ -1,0 +1,273 @@
+<section class="page">
+  <div class="page-header">
+    <div>
+      <h1>Reportes</h1>
+      <p>Consulta y exporta reportes de actividades y certificados emitidos.</p>
+    </div>
+  </div>
+
+  @if (vm.error(); as error) {
+    <div class="error-banner" role="alert">{{ error }}</div>
+  }
+
+  <mat-tab-group animationDuration="0ms">
+    <!-- ==================== Actividades ==================== -->
+    <mat-tab label="Actividades">
+      <div class="tab-body">
+        <mat-card class="filters-card">
+          <mat-card-content>
+            <form class="filters" [formGroup]="filtrosActividades" (ngSubmit)="aplicarActividades()">
+              <mat-form-field appearance="outline">
+                <mat-label>Tipo</mat-label>
+                <mat-select formControlName="tipo">
+                  <mat-option value="">Todos</mat-option>
+                  @for (tipo of tipos; track tipo) {
+                    <mat-option [value]="tipo">{{ tipo }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Estado</mat-label>
+                <mat-select formControlName="estado">
+                  <mat-option value="">Todos</mat-option>
+                  @for (estado of estados; track estado) {
+                    <mat-option [value]="estado">{{ estado }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Área organizadora</mat-label>
+                <mat-select formControlName="areaId">
+                  <mat-option [value]="null">Todas</mat-option>
+                  @for (area of areas(); track area.id) {
+                    <mat-option [value]="area.id">{{ area.nombre }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Desde</mat-label>
+                <input matInput formControlName="fechaDesde" [matDatepicker]="desdeAct" />
+                <mat-datepicker-toggle matIconSuffix [for]="desdeAct" />
+                <mat-datepicker #desdeAct />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Hasta</mat-label>
+                <input matInput formControlName="fechaHasta" [matDatepicker]="hastaAct" />
+                <mat-datepicker-toggle matIconSuffix [for]="hastaAct" />
+                <mat-datepicker #hastaAct />
+              </mat-form-field>
+
+              <div class="filter-actions">
+                <button mat-flat-button color="primary" type="submit">Filtrar</button>
+                <button mat-button type="button" (click)="limpiarActividades()">Limpiar</button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <div class="toolbar">
+          <span class="toolbar-info">{{ vm.actividades().length }} actividad(es)</span>
+          <span class="spacer"></span>
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="exportando() || vm.loading()"
+            (click)="exportar('actividades', 'pdf')"
+          >
+            <mat-icon>picture_as_pdf</mat-icon>
+            Exportar PDF
+          </button>
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="exportando() || vm.loading()"
+            (click)="exportar('actividades', 'csv')"
+          >
+            <mat-icon>table_view</mat-icon>
+            Exportar Excel
+          </button>
+        </div>
+
+        <mat-card class="table-card">
+          @if (vm.loading()) {
+            <div class="loading"><mat-spinner diameter="42" /></div>
+          } @else {
+            <div class="table-container">
+              <table mat-table [dataSource]="vm.actividades()">
+                <ng-container matColumnDef="nombre">
+                  <th mat-header-cell *matHeaderCellDef>Actividad</th>
+                  <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="tipo">
+                  <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                  <td mat-cell *matCellDef="let row">{{ row.tipo }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="estado">
+                  <th mat-header-cell *matHeaderCellDef>Estado</th>
+                  <td mat-cell *matCellDef="let row">{{ row.estado }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="area">
+                  <th mat-header-cell *matHeaderCellDef>Área</th>
+                  <td mat-cell *matCellDef="let row">{{ row.area || 'Sin área' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="fechaInicio">
+                  <th mat-header-cell *matHeaderCellDef>Inicio</th>
+                  <td mat-cell *matCellDef="let row">{{ row.fechaInicio | date: 'dd/MM/yyyy' : 'UTC' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="fechaFin">
+                  <th mat-header-cell *matHeaderCellDef>Fin</th>
+                  <td mat-cell *matCellDef="let row">{{ row.fechaFin | date: 'dd/MM/yyyy' : 'UTC' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="totalParticipantes">
+                  <th mat-header-cell *matHeaderCellDef class="num">Participantes</th>
+                  <td mat-cell *matCellDef="let row" class="num">{{ row.totalParticipantes }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="totalCertificados">
+                  <th mat-header-cell *matHeaderCellDef class="num">Certificados</th>
+                  <td mat-cell *matCellDef="let row" class="num">{{ row.totalCertificados }}</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="columnasActividades"></tr>
+                <tr mat-row *matRowDef="let row; columns: columnasActividades"></tr>
+                <tr class="empty-row" *matNoDataRow>
+                  <td [attr.colspan]="columnasActividades.length">
+                    No hay datos para los filtros seleccionados.
+                  </td>
+                </tr>
+              </table>
+            </div>
+          }
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- ==================== Certificados ==================== -->
+    <mat-tab label="Certificados">
+      <div class="tab-body">
+        <mat-card class="filters-card">
+          <mat-card-content>
+            <form
+              class="filters"
+              [formGroup]="filtrosCertificados"
+              (ngSubmit)="aplicarCertificados()"
+            >
+              <mat-form-field appearance="outline">
+                <mat-label>Tipo</mat-label>
+                <mat-select formControlName="tipo">
+                  <mat-option value="">Todos</mat-option>
+                  @for (tipo of tipos; track tipo) {
+                    <mat-option [value]="tipo">{{ tipo }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Área organizadora</mat-label>
+                <mat-select formControlName="areaId">
+                  <mat-option [value]="null">Todas</mat-option>
+                  @for (area of areas(); track area.id) {
+                    <mat-option [value]="area.id">{{ area.nombre }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Desde</mat-label>
+                <input matInput formControlName="fechaDesde" [matDatepicker]="desdeCert" />
+                <mat-datepicker-toggle matIconSuffix [for]="desdeCert" />
+                <mat-datepicker #desdeCert />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Hasta</mat-label>
+                <input matInput formControlName="fechaHasta" [matDatepicker]="hastaCert" />
+                <mat-datepicker-toggle matIconSuffix [for]="hastaCert" />
+                <mat-datepicker #hastaCert />
+              </mat-form-field>
+
+              <div class="filter-actions">
+                <button mat-flat-button color="primary" type="submit">Filtrar</button>
+                <button mat-button type="button" (click)="limpiarCertificados()">Limpiar</button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <div class="toolbar">
+          <span class="toolbar-info total-general">
+            Total de certificados emitidos:
+            <strong>{{ vm.totalGeneralCertificados() | number }}</strong>
+          </span>
+          <span class="spacer"></span>
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="exportando() || vm.loading()"
+            (click)="exportar('certificados', 'pdf')"
+          >
+            <mat-icon>picture_as_pdf</mat-icon>
+            Exportar PDF
+          </button>
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="exportando() || vm.loading()"
+            (click)="exportar('certificados', 'csv')"
+          >
+            <mat-icon>table_view</mat-icon>
+            Exportar Excel
+          </button>
+        </div>
+
+        <mat-card class="table-card">
+          @if (vm.loading()) {
+            <div class="loading"><mat-spinner diameter="42" /></div>
+          } @else {
+            <div class="table-container">
+              <table mat-table [dataSource]="vm.certificados()">
+                <ng-container matColumnDef="nombreActividad">
+                  <th mat-header-cell *matHeaderCellDef>Actividad</th>
+                  <td mat-cell *matCellDef="let row">{{ row.nombreActividad }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="tipo">
+                  <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                  <td mat-cell *matCellDef="let row">{{ row.tipo }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="cantidad">
+                  <th mat-header-cell *matHeaderCellDef class="num">Cantidad</th>
+                  <td mat-cell *matCellDef="let row" class="num">{{ row.cantidad }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="fechaEmision">
+                  <th mat-header-cell *matHeaderCellDef>Fecha de emisión</th>
+                  <td mat-cell *matCellDef="let row">{{ row.fechaEmision | date: 'dd/MM/yyyy' : 'UTC' }}</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="columnasCertificados"></tr>
+                <tr mat-row *matRowDef="let row; columns: columnasCertificados"></tr>
+                <tr class="empty-row" *matNoDataRow>
+                  <td [attr.colspan]="columnasCertificados.length">
+                    No hay datos para los filtros seleccionados.
+                  </td>
+                </tr>
+              </table>
+            </div>
+          }
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</section>

@@ -69,6 +69,8 @@ export class ParticipantesPanelComponent implements OnInit {
   /** true cuando ya se resolvió una búsqueda para el DNI actual (encontrada o no). */
   readonly busquedaHecha = signal(false);
   readonly enviando = signal(false);
+  /** true mientras se descarga la exportación: solo deshabilita el botón. */
+  readonly exportando = signal(false);
 
   readonly form = this.fb.nonNullable.group({
     dni: ['', [Validators.required, Validators.pattern(DNI_REGEX)]],
@@ -156,6 +158,22 @@ export class ParticipantesPanelComponent implements OnInit {
 
   cambiarPagina(event: PageEvent): void {
     this.vm.cargar(this.actividadId(), event.pageIndex + 1);
+  }
+
+  /** Exporta la lista de participantes (RF-33: disponible para los 3 roles). */
+  exportar(formato: 'csv' | 'pdf'): void {
+    if (this.exportando()) return;
+
+    this.exportando.set(true);
+    this.vm
+      .exportar(this.actividadId(), formato)
+      .pipe(finalize(() => this.exportando.set(false)))
+      .subscribe({
+        next: () =>
+          this.snackBar.open('Exportación descargada.', 'Cerrar', { duration: 3000 }),
+        error: () =>
+          this.snackBar.open('No se pudo exportar la lista.', 'Cerrar', { duration: 4000 }),
+      });
   }
 
   private buscarPersona(dni: string): void {

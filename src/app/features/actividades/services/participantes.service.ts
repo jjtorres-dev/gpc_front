@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, catchError, finalize, map, tap, throwError } from 'rxjs';
 
+import { descargarBlobComoArchivo } from '../../../core/utils/descarga-archivo';
 import { Participacion, ParticipacionPayload } from '../models/participacion.model';
 import {
   ParticipantesApiService,
@@ -117,6 +118,24 @@ export class ParticipantesService {
       ),
       catchError((error: HttpErrorResponse) => {
         this._error.set('No se pudo actualizar la asistencia.');
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  /**
+   * Exporta la lista de participantes de la actividad como CSV o PDF y dispara
+   * la descarga del archivo (helper compartido de blob + `<a>` temporal).
+   */
+  exportar(actividadId: number, formato: 'csv' | 'pdf'): Observable<void> {
+    this._error.set(null);
+
+    return this.api.exportar(actividadId, formato).pipe(
+      map((blob) => {
+        descargarBlobComoArchivo(blob, `participantes-actividad-${actividadId}.${formato}`);
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this._error.set('No se pudo exportar la lista de participantes.');
         return throwError(() => error);
       }),
     );

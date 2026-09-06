@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, catchError, finalize, map, tap, throwError } from 'rxjs';
 
+import { abrirBlobEnPestana } from '../../../../core/utils/descarga-archivo';
 import { CertificadoResumen, ResultadoLote } from '../models/certificado.model';
 import { CertificadosApiService } from '../data-access/certificados-api.service';
 
@@ -89,18 +90,7 @@ export class CertificadosService {
     this._error.set(null);
 
     return this.api.descargar(certId).pipe(
-      map((blob) => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.target = '_blank';
-        link.rel = 'noopener';
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        // Se revoca luego para dar tiempo a que la pestaña cargue el blob.
-        setTimeout(() => URL.revokeObjectURL(url), 60_000);
-      }),
+      map((blob) => abrirBlobEnPestana(blob)),
       catchError((error: HttpErrorResponse) => {
         this._error.set('No se pudo descargar el certificado.');
         return throwError(() => error);

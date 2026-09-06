@@ -56,4 +56,12 @@ export class ParticipantesApiService {
       { asistencia },
     );
   }
+
+  /** Descarga la lista de participantes de la actividad (CSV o PDF). */
+  exportar(actividadId: number, formato: 'csv' | 'pdf'): Observable<Blob> {
+    return this.http.get(`${this.baseUrl(actividadId)}/exportar`, {
+      params: new HttpParams().set('formato', formato),
+      responseType: 'blob',
+    });
+  }
 }

@@ -6,6 +6,19 @@
   margin-block-end: 1.5rem;
 }
 
+.panel-header {
+  align-items: center;
+}
+
+.panel-header .mat-mdc-card-title {
+  flex: 1;
+}
+
+.panel-header mat-spinner {
+  display: inline-block;
+  margin-inline-end: 0.35rem;
+}
+
 .alta-form {
   display: flex;
   flex-direction: column;

@@ -1,0 +1,36 @@
+<section class="page">
+  <div class="page-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Resumen general del sistema de certificados y reconocimientos.</p>
+    </div>
+    <button mat-button type="button" (click)="vm.cargar()" [disabled]="vm.loading()">
+      <mat-icon>refresh</mat-icon>
+      Actualizar
+    </button>
+  </div>
+
+  @if (vm.error(); as error) {
+    <div class="error-banner" role="alert">{{ error }}</div>
+  }
+
+  @if (vm.loading()) {
+    <div class="loading" aria-label="Cargando resumen">
+      <mat-spinner diameter="42" />
+    </div>
+  } @else if (vm.resumen()) {
+    <div class="cards-grid">
+      @for (tarjeta of tarjetas(); track tarjeta.etiqueta) {
+        <mat-card class="stat-card" [class]="tarjeta.clase">
+          <mat-card-content>
+            <mat-icon class="stat-icon">{{ tarjeta.icono }}</mat-icon>
+            <div class="stat-body">
+              <span class="stat-value">{{ tarjeta.valor | number }}</span>
+              <span class="stat-label">{{ tarjeta.etiqueta }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+</section>
