@@ -1,0 +1,144 @@
+<mat-card class="certificados-card">
+  <mat-card-header>
+    <mat-card-title>Certificados</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="acciones-top">
+      <span
+        [matTooltip]="'La actividad debe estar Cerrada para generar certificados'"
+        [matTooltipDisabled]="cerrada()"
+      >
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="!cerrada() || vm.generando()"
+          (click)="generar()"
+        >
+          @if (vm.generando()) {
+            <mat-spinner diameter="20" />
+          } @else {
+            <ng-container><mat-icon>workspace_premium</mat-icon> Generar certificados</ng-container>
+          }
+        </button>
+      </span>
+    </div>
+
+    @if (vm.generando()) {
+      <p class="generando-hint">
+        <mat-spinner diameter="18" />
+        Generando certificados…
+      </p>
+    }
+
+    @if (vm.ultimoResultado(); as resultado) {
+      <div class="resultado-banner" role="status">
+        <p class="resultado-resumen">
+          <mat-icon>task_alt</mat-icon>
+          {{ resultado.generados.length }} certificados generados,
+          {{ resultado.fallidos.length }} fallidos.
+        </p>
+        @if (resultado.fallidos.length > 0) {
+          <ul class="resultado-fallidos">
+            @for (fallido of resultado.fallidos; track $index) {
+              <li><strong>{{ fallido.nombreCompleto }}</strong>: {{ fallido.motivo }}</li>
+            }
+          </ul>
+        }
+      </div>
+    }
+
+    @if (vm.error(); as error) {
+      <div class="error-banner" role="alert">{{ error }}</div>
+    }
+
+    @if (vm.loading()) {
+      <div class="loading" aria-label="Cargando certificados">
+        <mat-spinner diameter="36" />
+      </div>
+    } @else {
+      <div class="tabla-wrapper">
+        <table mat-table [dataSource]="vm.items()" class="certificados-tabla">
+          <ng-container matColumnDef="dni">
+            <th mat-header-cell *matHeaderCellDef>DNI</th>
+            <td mat-cell *matCellDef="let row">{{ row.dni }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="nombreCompleto">
+            <th mat-header-cell *matHeaderCellDef>Nombre completo</th>
+            <td mat-cell *matCellDef="let row">{{ row.nombreCompleto }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="asistencia">
+            <th mat-header-cell *matHeaderCellDef>Asistencia</th>
+            <td mat-cell *matCellDef="let row">
+              @if (row.asistencia) {
+                <mat-icon class="icon-si" aria-label="Asistió">check_circle</mat-icon>
+              } @else {
+                <mat-icon class="icon-no" aria-label="No asistió">cancel</mat-icon>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="certificado">
+            <th mat-header-cell *matHeaderCellDef>Certificado</th>
+            <td mat-cell *matCellDef="let row">
+              @if (row.certificado; as cert) {
+                <div class="cert-cell">
+                  <button
+                    mat-button
+                    color="primary"
+                    type="button"
+                    [disabled]="descargandoId() === cert.id"
+                    (click)="verPdf(row)"
+                  >
+                    @if (descargandoId() === cert.id) {
+                      <mat-spinner diameter="18" />
+                    } @else {
+                      <ng-container><mat-icon>picture_as_pdf</mat-icon> Ver PDF</ng-container>
+                    }
+                  </button>
+                  @if (cert.notificado) {
+                    <mat-icon class="icon-notificado" matTooltip="Titular notificado">
+                      mark_email_read
+                    </mat-icon>
+                  } @else {
+                    <mat-icon class="icon-pendiente" matTooltip="Notificación pendiente">
+                      mail_outline
+                    </mat-icon>
+                  }
+                </div>
+              } @else {
+                <span class="sin-generar">Sin generar</span>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let row" class="acciones-cell">
+              @if (row.certificado) {
+                <button
+                  mat-button
+                  type="button"
+                  (click)="confirmarReemision(row)"
+                  [attr.aria-label]="'Reemitir certificado de ' + row.nombreCompleto"
+                >
+                  <mat-icon>autorenew</mat-icon>
+                  Reemitir
+                </button>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnas()"></tr>
+          <tr mat-row *matRowDef="let row; columns: columnas()"></tr>
+          <tr class="empty-row" *matNoDataRow>
+            <td [attr.colspan]="columnas().length">Aún no hay personas para certificar.</td>
+          </tr>
+        </table>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

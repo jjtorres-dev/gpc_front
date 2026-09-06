@@ -1,0 +1,113 @@
+:host {
+  display: block;
+}
+
+.certificados-card {
+  margin-block-end: 1.5rem;
+}
+
+.acciones-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-block-end: 1rem;
+}
+
+.acciones-top mat-spinner {
+  display: inline-block;
+}
+
+.generando-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.9rem;
+}
+
+.generando-hint mat-spinner {
+  display: inline-block;
+}
+
+.resultado-banner {
+  margin-block-end: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: 4px;
+  background: #eef6ec;
+  color: #1e5b2a;
+}
+
+.resultado-resumen {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.resultado-fallidos {
+  margin: 0.5rem 0 0;
+  padding-inline-start: 1.25rem;
+  color: #8a1c1c;
+  font-size: 0.9rem;
+}
+
+.tabla-wrapper {
+  overflow-x: auto;
+}
+
+.certificados-tabla {
+  width: 100%;
+}
+
+.icon-si {
+  color: #1e7e34;
+}
+
+.icon-no {
+  color: #b3261e;
+}
+
+.cert-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon-notificado {
+  color: #1e7e34;
+}
+
+.icon-pendiente {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.sin-generar {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 0.9rem;
+}
+
+.acciones-cell {
+  text-align: end;
+  white-space: nowrap;
+}
+
+.empty-row td {
+  padding: 1rem;
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.error-banner {
+  margin-block-end: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: 4px;
+  color: #8a1c1c;
+  background: #fde8e8;
+}
+
+.loading {
+  display: grid;
+  min-height: 160px;
+  place-items: center;
+}

@@ -73,12 +73,9 @@
 
     <app-participantes-panel [actividadId]="item.id" [cerrada]="item.estado === 'Cerrada'" />
 
-    <div class="related-sections">
-      <app-placeholder
-        title="Certificados"
-        message="Módulo de Certificados en desarrollo"
-      />
-    </div>
+    <app-asignaciones-panel [actividadId]="item.id" [cerrada]="item.estado === 'Cerrada'" />
+
+    <app-certificados-panel [actividadId]="item.id" [cerrada]="item.estado === 'Cerrada'" />
     }
   }
 </section>

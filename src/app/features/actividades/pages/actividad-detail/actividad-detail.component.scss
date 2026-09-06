@@ -66,12 +66,6 @@ dd {
   opacity: 0.38;
 }
 
-.related-sections {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-
 .error-banner {
   margin-block-end: 1rem;
   padding: 0.875rem 1rem;
@@ -91,8 +85,7 @@ dd {
     padding: 1rem;
   }
 
-  .details-grid,
-  .related-sections {
+  .details-grid {
     grid-template-columns: 1fr;
   }
 

@@ -1,0 +1,161 @@
+<mat-card class="asignaciones-card">
+  <mat-card-header>
+    <mat-card-title>Ponentes y Firmante</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (vm.error(); as error) {
+      <div class="error-banner" role="alert">{{ error }}</div>
+    }
+
+    @if (vm.loading()) {
+      <div class="loading" aria-label="Cargando asignaciones">
+        <mat-spinner diameter="36" />
+      </div>
+    } @else {
+      <!-- Sub-bloque Ponentes -->
+      <section class="sub-bloque">
+        <h3>Ponentes</h3>
+
+        <div class="alta-row">
+          <mat-form-field appearance="outline" class="select-field">
+            <mat-label>Ponente del catálogo</mat-label>
+            <mat-select [formControl]="ponenteCtrl">
+              @if (ponentesDisponibles().length === 0) {
+                <mat-option disabled>No hay ponentes disponibles</mat-option>
+              } @else {
+                @for (ponente of ponentesDisponibles(); track ponente.id) {
+                  <mat-option [value]="ponente.id">
+                    {{ ponente.nombreCompleto }}
+                    @if (ponente.institucion) {
+                      <span class="opt-meta"> — {{ ponente.institucion }}</span>
+                    }
+                  </mat-option>
+                }
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <span
+            [matTooltip]="'No se pueden asignar ponentes en una actividad cerrada'"
+            [matTooltipDisabled]="!cerrada()"
+          >
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              [disabled]="cerrada() || ponenteCtrl.value == null || agregandoPonente()"
+              (click)="agregarPonente()"
+            >
+              @if (agregandoPonente()) {
+                <mat-spinner diameter="20" />
+              } @else {
+                <ng-container><mat-icon>add</mat-icon> Agregar</ng-container>
+              }
+            </button>
+          </span>
+        </div>
+
+        @if (vm.ponentesAsignados().length === 0) {
+          <p class="vacio">Aún no hay ponentes asignados.</p>
+        } @else {
+          <ul class="asignados-list">
+            @for (asignado of vm.ponentesAsignados(); track asignado.id) {
+              <li class="asignado-row">
+                <div class="asignado-datos">
+                  <span class="asignado-nombre">{{ asignado.ponente.nombreCompleto }}</span>
+                  @if (metaPonente(asignado); as meta) {
+                    <span class="asignado-meta">{{ meta }}</span>
+                  }
+                </div>
+                <span
+                  [matTooltip]="'No se pueden quitar ponentes en una actividad cerrada'"
+                  [matTooltipDisabled]="!cerrada()"
+                >
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    type="button"
+                    [disabled]="cerrada() || quitandoPonenteId() === asignado.id"
+                    [attr.aria-label]="'Quitar a ' + asignado.ponente.nombreCompleto"
+                    (click)="quitarPonente(asignado.id)"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <!-- Sub-bloque Firmante -->
+      <section class="sub-bloque">
+        <h3>Firmante</h3>
+
+        @if (vm.firmanteAsignado(); as firmante) {
+          <div class="firmante-card">
+            <div class="firmante-datos">
+              <mat-icon>verified_user</mat-icon>
+              <div>
+                <span class="asignado-nombre">{{ firmante.firma.usuario.nombreCompleto }}</span>
+                <span class="asignado-meta">{{ firmante.firma.usuario.cargo }}</span>
+              </div>
+            </div>
+            <span
+              [matTooltip]="'No se puede cambiar el firmante de una actividad cerrada'"
+              [matTooltipDisabled]="!cerrada()"
+            >
+              <button
+                mat-stroked-button
+                color="warn"
+                type="button"
+                [disabled]="cerrada() || quitandoFirmante()"
+                (click)="confirmarQuitarFirmante()"
+              >
+                <mat-icon>close</mat-icon>
+                Quitar firmante
+              </button>
+            </span>
+          </div>
+        } @else {
+          <div class="alta-row">
+            <mat-form-field appearance="outline" class="select-field">
+              <mat-label>Firmante registrado</mat-label>
+              <mat-select [formControl]="firmanteCtrl">
+                @if (catalogoFirmantes().length === 0) {
+                  <mat-option disabled>No hay firmantes registrados</mat-option>
+                } @else {
+                  @for (firmante of catalogoFirmantes(); track firmante.id) {
+                    <mat-option [value]="firmante.id">
+                      {{ firmante.usuario.nombreCompleto }} ({{ firmante.usuario.cargo }})
+                    </mat-option>
+                  }
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <span
+              [matTooltip]="'No se puede asignar firmante en una actividad cerrada'"
+              [matTooltipDisabled]="!cerrada()"
+            >
+              <button
+                mat-flat-button
+                color="primary"
+                type="button"
+                [disabled]="cerrada() || firmanteCtrl.value == null || asignandoFirmante()"
+                (click)="asignarFirmante()"
+              >
+                @if (asignandoFirmante()) {
+                  <mat-spinner diameter="20" />
+                } @else {
+                  <ng-container><mat-icon>add</mat-icon> Asignar</ng-container>
+                }
+              </button>
+            </span>
+          </div>
+        }
+      </section>
+    }
+  </mat-card-content>
+</mat-card>
