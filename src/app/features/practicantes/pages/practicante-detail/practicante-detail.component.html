@@ -1,0 +1,176 @@
+<section class="page">
+  <div class="page-header">
+    <h1>Detalle de practicante</h1>
+    <a mat-button routerLink="/practicantes">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </a>
+  </div>
+
+  @if (vm.error(); as error) {
+    <div class="error-banner" role="alert">{{ error }}</div>
+  }
+
+  @if (vm.loading() && !practicante()) {
+    <div class="loading" aria-label="Cargando practicante">
+      <mat-spinner diameter="42" />
+    </div>
+  }
+
+  @if (practicante(); as p) {
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>{{ p.persona.nombreCompleto }}</mat-card-title>
+        <mat-card-subtitle>DNI {{ p.persona.dni }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <dl class="details-grid">
+          <div>
+            <dt>Estado</dt>
+            <dd>
+              <mat-chip-set aria-label="Estado de la práctica">
+                <mat-chip
+                  [class.active-chip]="p.estadoPractica === 'En curso'"
+                  [class.closed-chip]="p.estadoPractica === 'Concluida'"
+                >
+                  {{ p.estadoPractica }}
+                </mat-chip>
+              </mat-chip-set>
+            </dd>
+          </div>
+          <div>
+            <dt>Correo</dt>
+            <dd>{{ p.persona.correo || 'No registrado' }}</dd>
+          </div>
+          <div>
+            <dt>Institución</dt>
+            <dd>{{ p.institucion.nombreInstitucion }}</dd>
+          </div>
+          <div>
+            <dt>Carrera</dt>
+            <dd>{{ p.carrera }}</dd>
+          </div>
+          <div>
+            <dt>Área</dt>
+            <dd>{{ p.area || 'No especificada' }}</dd>
+          </div>
+          <div>
+            <dt>Jefe supervisor</dt>
+            <dd>{{ p.jefeSupervisor || 'No especificado' }}</dd>
+          </div>
+          <div>
+            <dt>Fecha de inicio</dt>
+            <dd>{{ p.fechaInicio | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
+          </div>
+          <div>
+            <dt>Fecha de fin</dt>
+            <dd>{{ p.fechaFin | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
+          </div>
+        </dl>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <a mat-button color="primary" [routerLink]="['/practicantes', p.id, 'editar']">
+          <mat-icon>edit</mat-icon>
+          Editar
+        </a>
+        @if (p.estadoPractica === 'En curso') {
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            [disabled]="concluyendo()"
+            (click)="confirmarConcluir()"
+          >
+            @if (concluyendo()) {
+              <mat-spinner diameter="20" />
+            } @else {
+              <ng-container><mat-icon>task_alt</mat-icon> Concluir práctica</ng-container>
+            }
+          </button>
+        }
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card class="cert-card">
+      <mat-card-header>
+        <mat-card-title>Certificado</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (p.certificado; as cert) {
+          <dl class="details-grid">
+            <div>
+              <dt>Código</dt>
+              <dd>{{ cert.codigo }}</dd>
+            </div>
+            <div>
+              <dt>Fecha de emisión</dt>
+              <dd>{{ cert.fechaEmision | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
+            </div>
+            <div>
+              <dt>Estado</dt>
+              <dd>
+                <mat-chip-set aria-label="Estado del certificado">
+                  @if (estadoAnulado(cert.estado)) {
+                    <mat-chip class="chip-anulado">Anulado</mat-chip>
+                  } @else {
+                    <mat-chip class="chip-valido">Válido</mat-chip>
+                  }
+                </mat-chip-set>
+              </dd>
+            </div>
+          </dl>
+          <div class="cert-actions">
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              [disabled]="descargando()"
+              (click)="verPdf()"
+            >
+              @if (descargando()) {
+                <mat-spinner diameter="20" />
+              } @else {
+                <ng-container><mat-icon>picture_as_pdf</mat-icon> Ver PDF</ng-container>
+              }
+            </button>
+          </div>
+        } @else if (p.estadoPractica === 'Concluida') {
+          <p class="cert-hint">Genera el certificado eligiendo la firma que lo respalda.</p>
+          <div class="cert-generar">
+            <mat-form-field appearance="outline" class="firma-field">
+              <mat-label>Firmante</mat-label>
+              <mat-select [formControl]="firmaControl">
+                @for (firmante of firmantes(); track firmante.id) {
+                  <mat-option [value]="firmante.id">
+                    {{ firmante.usuario.nombreCompleto }} — {{ firmante.usuario.cargo }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (firmantes().length === 0) {
+                <mat-hint>No hay firmantes registrados.</mat-hint>
+              }
+            </mat-form-field>
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              [disabled]="generando() || firmaControl.value == null"
+              (click)="generarCertificado()"
+            >
+              @if (generando()) {
+                <mat-spinner diameter="20" />
+              } @else {
+                <ng-container><mat-icon>workspace_premium</mat-icon> Generar certificado</ng-container>
+              }
+            </button>
+          </div>
+        } @else {
+          <p class="cert-hint muted">
+            <mat-icon>schedule</mat-icon>
+            Disponible al concluir la práctica.
+          </p>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</section>

@@ -1,0 +1,246 @@
+<section class="page">
+  <div class="page-header">
+    <div>
+      <h1>{{ isEditMode ? 'Editar practicante' : 'Registrar practicante' }}</h1>
+      <p>
+        {{
+          isEditMode
+            ? 'Actualiza los datos de la práctica pre-profesional.'
+            : 'Registra una nueva práctica pre-profesional.'
+        }}
+      </p>
+    </div>
+    <a mat-button routerLink="/practicantes">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </a>
+  </div>
+
+  @if (practicaConcluida()) {
+    <div class="closed-banner" role="alert">
+      <mat-icon>lock</mat-icon>
+      Esta práctica está concluida: sus datos ya no pueden modificarse.
+    </div>
+  }
+
+  @if (vm.error(); as error) {
+    <div class="error-banner" role="alert">{{ error }}</div>
+  }
+
+  <mat-card>
+    <mat-card-content>
+      @if (isEditMode && vm.loading() && !personaFija()) {
+        <div class="loading" aria-label="Cargando practicante">
+          <mat-spinner diameter="42" />
+        </div>
+      } @else {
+        <form class="prac-form" [formGroup]="form" (ngSubmit)="guardar()">
+          <!-- ============ Bloque persona ============ -->
+          @if (isEditMode) {
+            @if (personaFija(); as p) {
+              <div class="fija-block full-width">
+                <span class="field-label">Practicante</span>
+                <p class="fija-nombre">{{ p.nombreCompleto }}</p>
+                <p class="fija-meta">
+                  DNI {{ p.dni }}
+                  @if (p.correo) {
+                    <span> · {{ p.correo }}</span>
+                  }
+                </p>
+                <p class="fija-hint">La persona de una práctica existente no se puede reasignar.</p>
+              </div>
+            }
+          } @else {
+            <mat-form-field appearance="outline" class="dni-field">
+              <mat-label>DNI</mat-label>
+              <input
+                matInput
+                formControlName="dni"
+                inputmode="numeric"
+                maxlength="8"
+                autocomplete="off"
+              />
+              @if (buscando()) {
+                <mat-spinner matSuffix diameter="18" />
+              }
+              @if (form.controls.dni.hasError('required') && form.controls.dni.touched) {
+                <mat-error>El DNI es obligatorio.</mat-error>
+              }
+              @if (form.controls.dni.hasError('pattern') && form.controls.dni.touched) {
+                <mat-error>El DNI debe tener 8 dígitos.</mat-error>
+              }
+            </mat-form-field>
+
+            @if (busquedaHecha() && persona(); as encontrada) {
+              <div class="persona-info full-width">
+                <mat-chip-set aria-label="Estado de la persona">
+                  <mat-chip class="persona-chip-existente">
+                    <mat-icon matChipAvatar>badge</mat-icon>
+                    Persona existente
+                  </mat-chip>
+                </mat-chip-set>
+                <dl class="persona-datos">
+                  <div>
+                    <dt>Nombre completo</dt>
+                    <dd>{{ encontrada.nombreCompleto }}</dd>
+                  </div>
+                  <div>
+                    <dt>Correo</dt>
+                    <dd>{{ encontrada.correo || 'No registrado' }}</dd>
+                  </div>
+                </dl>
+              </div>
+            } @else if (personaNueva) {
+              <div class="persona-nueva full-width">
+                <p class="persona-nueva-hint">
+                  <mat-icon>person_add</mat-icon>
+                  Persona nueva, completa sus datos.
+                </p>
+                <div class="row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Nombre completo</mat-label>
+                    <input matInput formControlName="nombreCompleto" autocomplete="off" />
+                    @if (
+                      form.controls.nombreCompleto.hasError('required') &&
+                      form.controls.nombreCompleto.touched
+                    ) {
+                      <mat-error>El nombre completo es obligatorio.</mat-error>
+                    }
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Correo (opcional)</mat-label>
+                    <input matInput type="email" formControlName="correo" autocomplete="off" />
+                    @if (form.controls.correo.hasError('email') && form.controls.correo.touched) {
+                      <mat-error>El correo no tiene un formato válido.</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+              </div>
+            }
+          }
+
+          <!-- ============ Bloque institución ============ -->
+          @if (isEditMode) {
+            @if (institucionFija(); as inst) {
+              <div class="fija-block full-width">
+                <span class="field-label">Institución</span>
+                <p class="fija-nombre">{{ inst.nombreInstitucion }}</p>
+                <p class="fija-hint">La institución de una práctica existente no se puede reasignar.</p>
+              </div>
+            }
+          } @else {
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Institución</mat-label>
+              <input
+                matInput
+                [formControl]="institucionControl"
+                [matAutocomplete]="autoInst"
+                autocomplete="off"
+                placeholder="Escribe para buscar o registrar una nueva"
+              />
+              @if (buscandoInstitucion()) {
+                <mat-spinner matSuffix diameter="18" />
+              }
+              <mat-autocomplete
+                #autoInst="matAutocomplete"
+                (optionSelected)="onInstitucionSeleccionada($event.option.value)"
+              >
+                @for (inst of institucionSugerencias(); track inst.id) {
+                  <mat-option [value]="inst.nombreInstitucion">{{ inst.nombreInstitucion }}</mat-option>
+                }
+              </mat-autocomplete>
+              @if (institucionControl.hasError('required') && institucionControl.touched) {
+                <mat-error>La institución es obligatoria.</mat-error>
+              }
+            </mat-form-field>
+
+            @if (institucionEsNueva) {
+              <p class="hint-nueva full-width">
+                <mat-icon>add_business</mat-icon>
+                Institución nueva, se registrará en el catálogo.
+              </p>
+            }
+          }
+
+          <!-- ============ Datos de la práctica ============ -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Carrera</mat-label>
+            <input matInput formControlName="carrera" />
+            @if (form.controls.carrera.hasError('required') && form.controls.carrera.touched) {
+              <mat-error>La carrera es obligatoria.</mat-error>
+            }
+            @if (form.controls.carrera.hasError('maxlength') && form.controls.carrera.touched) {
+              <mat-error>La carrera no puede superar los 150 caracteres.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Área</mat-label>
+            <input matInput formControlName="area" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Jefe supervisor</mat-label>
+            <input matInput formControlName="jefeSupervisor" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de inicio</mat-label>
+            <input matInput formControlName="fechaInicio" [matDatepicker]="inicioPicker" />
+            <mat-datepicker-toggle matIconSuffix [for]="inicioPicker" />
+            <mat-datepicker #inicioPicker />
+            @if (
+              form.controls.fechaInicio.hasError('required') && form.controls.fechaInicio.touched
+            ) {
+              <mat-error>La fecha de inicio es obligatoria.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de fin</mat-label>
+            <input matInput formControlName="fechaFin" [matDatepicker]="finPicker" />
+            <mat-datepicker-toggle matIconSuffix [for]="finPicker" />
+            <mat-datepicker #finPicker />
+            @if (form.controls.fechaFin.hasError('required') && form.controls.fechaFin.touched) {
+              <mat-error>La fecha de fin es obligatoria.</mat-error>
+            }
+          </mat-form-field>
+
+          @if (
+            form.hasError('rangoFechas') &&
+            (form.controls.fechaInicio.touched || form.controls.fechaFin.touched)
+          ) {
+            <div class="date-error full-width" role="alert">
+              La fecha de fin no puede ser anterior a la fecha de inicio.
+            </div>
+          }
+
+          @if (vm.formError(); as formError) {
+            <p class="form-error full-width" role="alert">{{ formError }}</p>
+          }
+
+          <div class="form-actions full-width">
+            <a mat-button routerLink="/practicantes">Cancelar</a>
+            <button
+              mat-flat-button
+              color="primary"
+              type="submit"
+              [disabled]="
+                guardando() ||
+                practicaConcluida() ||
+                form.invalid ||
+                (!isEditMode && (institucionControl.invalid || !busquedaHecha() || buscando()))
+              "
+            >
+              @if (guardando()) {
+                <mat-spinner diameter="20" />
+              } @else {
+                {{ isEditMode ? 'Guardar cambios' : 'Registrar' }}
+              }
+            </button>
+          </div>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

@@ -124,6 +124,42 @@ export const routes: Routes = [
           import('./shared/components/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
       },
       {
+        path: 'practicantes',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador', 'Administrador'], title: 'Practicantes' },
+        loadComponent: () =>
+          import('./features/practicantes/pages/practicantes-list/practicantes-list.component').then(
+            (m) => m.PracticantesListComponent,
+          ),
+      },
+      {
+        path: 'practicantes/nuevo',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador', 'Administrador'], title: 'Nuevo practicante' },
+        loadComponent: () =>
+          import('./features/practicantes/pages/practicante-form/practicante-form.component').then(
+            (m) => m.PracticanteFormComponent,
+          ),
+      },
+      {
+        path: 'practicantes/:id/editar',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador', 'Administrador'], title: 'Editar practicante' },
+        loadComponent: () =>
+          import('./features/practicantes/pages/practicante-form/practicante-form.component').then(
+            (m) => m.PracticanteFormComponent,
+          ),
+      },
+      {
+        path: 'practicantes/:id',
+        canActivate: [roleGuard],
+        data: { roles: ['Digitador', 'Administrador'], title: 'Detalle de practicante' },
+        loadComponent: () =>
+          import('./features/practicantes/pages/practicante-detail/practicante-detail.component').then(
+            (m) => m.PracticanteDetailComponent,
+          ),
+      },
+      {
         path: 'reconocimientos',
         canActivate: [roleGuard],
         data: { roles: ['Digitador', 'Administrador'], title: 'Reconocimientos' },

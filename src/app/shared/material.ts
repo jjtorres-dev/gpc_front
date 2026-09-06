@@ -25,6 +25,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from '@angular/material/list';
@@ -50,6 +51,7 @@ export const MATERIAL_IMPORTS = [
   MatFormFieldModule,
   MatInputModule,
   MatSelectModule,
+  MatAutocompleteModule,
   MatCardModule,
   MatMenuModule,
   MatListModule,

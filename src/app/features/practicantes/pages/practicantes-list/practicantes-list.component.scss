@@ -1,0 +1,97 @@
+:host {
+  display: block;
+}
+
+.page {
+  padding: 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block-end: 1.25rem;
+}
+
+h1 {
+  margin: 0;
+}
+
+.page-header p {
+  margin: 0.25rem 0 0;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-block-end: 1rem;
+}
+
+.search-field {
+  flex: 1 1 320px;
+  max-width: 460px;
+}
+
+.estado-field {
+  flex: 0 1 200px;
+}
+
+.error-banner {
+  margin-block-end: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: 4px;
+  color: #8a1c1c;
+  background: #fde8e8;
+}
+
+.table-card {
+  overflow: hidden;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.loading {
+  display: grid;
+  min-height: 240px;
+  place-items: center;
+}
+
+.active-chip {
+  --mdc-chip-elevated-container-color: #d9f4df;
+  --mdc-chip-label-text-color: #176b2c;
+}
+
+.closed-chip {
+  --mdc-chip-elevated-container-color: #eeeeee;
+  --mdc-chip-label-text-color: #555555;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.empty-row td {
+  padding: 2rem;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

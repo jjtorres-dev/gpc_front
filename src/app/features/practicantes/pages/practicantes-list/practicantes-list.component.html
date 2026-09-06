@@ -1,0 +1,131 @@
+<section class="page">
+  <div class="page-header">
+    <div>
+      <h1>Practicantes</h1>
+      <p>Prácticas pre-profesionales registradas y su estado.</p>
+    </div>
+    <a mat-flat-button color="primary" routerLink="/practicantes/nuevo">
+      <mat-icon>add</mat-icon>
+      Nuevo practicante
+    </a>
+  </div>
+
+  <div class="filters">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        [formControl]="searchControl"
+        placeholder="Buscar por nombre, DNI, institución o carrera"
+        autocomplete="off"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="estado-field">
+      <mat-label>Estado</mat-label>
+      <mat-select [formControl]="estadoControl">
+        <mat-option value="">Todos</mat-option>
+        <mat-option value="En curso">En curso</mat-option>
+        <mat-option value="Concluida">Concluida</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (vm.error(); as error) {
+    <div class="error-banner" role="alert">{{ error }}</div>
+  }
+
+  <mat-card class="table-card">
+    @if (vm.loading()) {
+      <div class="loading" aria-label="Cargando practicantes">
+        <mat-spinner diameter="42" />
+      </div>
+    } @else {
+      <div class="table-container">
+        <table mat-table [dataSource]="vm.practicantes()">
+          <ng-container matColumnDef="dni">
+            <th mat-header-cell *matHeaderCellDef>DNI</th>
+            <td mat-cell *matCellDef="let row">{{ row.persona.dni }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="nombreCompleto">
+            <th mat-header-cell *matHeaderCellDef>Nombre completo</th>
+            <td mat-cell *matCellDef="let row">{{ row.persona.nombreCompleto }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="institucion">
+            <th mat-header-cell *matHeaderCellDef>Institución</th>
+            <td mat-cell *matCellDef="let row">{{ row.institucion.nombreInstitucion }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="carrera">
+            <th mat-header-cell *matHeaderCellDef>Carrera</th>
+            <td mat-cell *matCellDef="let row">{{ row.carrera }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="fechaInicio">
+            <th mat-header-cell *matHeaderCellDef>Inicio</th>
+            <td mat-cell *matCellDef="let row">{{ row.fechaInicio | date: 'dd/MM/yyyy' : 'UTC' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="fechaFin">
+            <th mat-header-cell *matHeaderCellDef>Fin</th>
+            <td mat-cell *matCellDef="let row">{{ row.fechaFin | date: 'dd/MM/yyyy' : 'UTC' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let row">
+              <mat-chip-set aria-label="Estado de la práctica">
+                <mat-chip
+                  [class.active-chip]="row.estadoPractica === 'En curso'"
+                  [class.closed-chip]="row.estadoPractica === 'Concluida'"
+                >
+                  {{ row.estadoPractica }}
+                </mat-chip>
+              </mat-chip-set>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let row" class="actions-cell">
+              <a
+                mat-icon-button
+                [routerLink]="['/practicantes', row.id]"
+                matTooltip="Ver detalle"
+                aria-label="Ver detalle"
+              >
+                <mat-icon>visibility</mat-icon>
+              </a>
+              <a
+                mat-icon-button
+                [routerLink]="['/practicantes', row.id, 'editar']"
+                matTooltip="Editar"
+                aria-label="Editar"
+              >
+                <mat-icon>edit</mat-icon>
+              </a>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr class="empty-row" *matNoDataRow>
+            <td [attr.colspan]="displayedColumns.length">No se encontraron practicantes.</td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="vm.meta().total"
+        [pageIndex]="vm.meta().page - 1"
+        [pageSize]="vm.meta().perPage"
+        [hidePageSize]="true"
+        (page)="cambiarPagina($event)"
+        aria-label="Paginación de practicantes"
+      />
+    }
+  </mat-card>
+</section>
